@@ -107,10 +107,14 @@ module Jekyll
     # render as markdown, and remove the troublesome pipe, which markdown
     # interprets as a table
     def slack_url(text)
-      text.scan(/<(\S+)\|/).flatten.each do |url|
+      text.scan(/<(\S+)\|([^>]+)>/).each do |url, text|
         # url text not always valid regex! should be treated literally
         url_rx = Regexp.escape url
-        text = text.gsub(/<#{url_rx}\|\S+>/, "<#{url}>")
+        text_rx = Regexp.escape text
+        # technically this breaks on inline code like `vi.se`, which Slack
+        # mangles as as `<http://vi.se|vi.se>`, which is so wrong that I'm not
+        # bothered to fix this
+        text = text.gsub(/<#{url_rx}\|#{text_rx}>/, "<a href='#{url}'>#{text}</a>")
       end
       return text
     end

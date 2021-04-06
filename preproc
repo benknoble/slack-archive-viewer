@@ -1,0 +1,7 @@
+#! /bin/sh
+
+main() {
+  find _data -name '*.json' -exec sh -c 'printf %s\\n %s-\\\\/-/-g wq | ed "$0"' {} \;
+}
+
+main "$@"
