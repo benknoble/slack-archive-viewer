@@ -47,8 +47,20 @@ module Jekyll
       parsed_msg = text
       # Loop through each mentioned user id, search for its replacement user
       # name, and make the swap
-      parsed_msg.scan(/<@(.{9}).*?>/).flatten.each do |uid|
-        username = user_name(uid)
+
+      # 9 is no longer a valid assumption, as my data has user-ids of length 11:
+      # grep -hoER '<@(.{9})[^>]*>' _data | sed 's/<@//g;s/>$//g' | awk '{print length($0), $0}' | awk '$1 > 9'
+
+      # in particular, they seem to max out at 11, but
+      # grep -hoER '<@(.{9})[^>]*>' _data | sed 's/<@//g;s/>$//g' | awk '{print length($0), $0}' | awk '$1 > 11'
+      # shows many (458) with the actual user names included?
+
+      # grep -hoER '<@(.{9})[^>]*>' _data | sed 's/<@//g;s/>$//g' | grep '\|' | sort | uniq | awk -F\| '{ print $2 system("grep -F " $1 " _data/users.json | sed s/,$//g | jq .name") }' | sed 's/^"//g;s/"$//g' | paste - - | awk '$1 != $2'
+      # all but one of the names exactly matches the name of the user-id in
+      # _data/users.json, but the non-matching name doesn't exist?
+      # for now, we'll assume anything right of the bar takes precedence
+      parsed_msg.scan(/<@([^|>]*)(\|([^>]*))?>/).each do |uid, _, uname|
+        username = uname || user_name(uid)
         parsed_msg = parsed_msg.gsub(/<@#{uid}.*?>/, "<strong>@#{username}</strong>")
       end
       return parsed_msg
@@ -60,8 +72,8 @@ module Jekyll
       parsed_msg = text
       # Loop through each mentioned user id, search for its replacement user
       # name, and make the swap
-      parsed_msg.scan(/<#(.{9})>/).flatten.each do |chid|
-        chname = channel_name(chid)
+      parsed_msg.scan(/<#([^|>]*)(\|([^>]*))?>/).each do |chid, _, chname|
+        chname ||= channel_name(chid)
         parsed_msg = parsed_msg.gsub(/<##{chid}>/, "<strong><a href='#{@context.registers[:site].baseurl}/#{chname}'>##{chname}</a></strong>")
       end
       return parsed_msg
@@ -74,7 +86,9 @@ module Jekyll
     # interprets as a table
     def slack_url(text)
       text.scan(/<(\S+)\|/).flatten.each do |url|
-        text = text.gsub(/<#{url}\|\S+>/, "<#{url}>")
+        # url text not always valid regex! should be treated literally
+        url_rx = Regexp.escape url
+        text = text.gsub(/<#{url_rx}\|\S+>/, "<#{url}>")
       end
       return text
     end
