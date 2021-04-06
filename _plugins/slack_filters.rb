@@ -14,12 +14,30 @@ module Jekyll
 
   module SlackMessageFilter
 
+    @@data = nil
+    @@users_x_id = nil
+    @@channels_x_id = nil
+    @@channels_x_name = nil
+
+    def _init_data_if_null
+      if @@data == nil
+        puts "slack filters: initializing site data cache"
+        @@data ||= @context.registers[:site].data
+        @@users_x_id ||= @@data["users"].to_h {|user| [user["id"], user]}
+        @@channels_x_id ||= @@data["channels"].to_h {|channel| [channel["id"], channel]}
+        @@channels_x_name ||= @@data["channels"].to_h {|channel| [channel["name"], channel]}
+        puts "slack filters: initialized site data cache"
+      end
+    end
+
     # Retrieve user name from ID string
     def user_name(id)
       if(id == "USLACKBOT")
         return "SlackBot"
       else
-        return @context.registers[:site].data["users"].find {|user| user["id"] == id}["name"]
+        _init_data_if_null
+        p id if @@users_x_id[id] == nil
+        return @@users_x_id[id]["name"]
       end
     end
 
@@ -28,18 +46,22 @@ module Jekyll
       if(id == "USLACKBOT")
         return "https://slack.global.ssl.fastly.net/66f9/img/slackbot_32.png"
       else
-        return @context.registers[:site].data["users"].find {|user| user["id"] == id}["profile"]["image_32"]
+        _init_data_if_null
+        return @@users_x_id[id]["profile"]["image_32"]
       end
     end
 
     # Retrieve channel name from ID string
     def channel_name(id)
-      return @context.registers[:site].data["channels"].find {|channel| channel["id"] == id}["name"]
+      _init_data_if_null
+      p id if @@channels_x_id[id] == nil
+      return @@channels_x_id[id]["name"]
     end
 
     # Retrieve channel purpose from channel name
     def channel_purpose(name)
-      return @context.registers[:site].data["channels"].find {|channel| channel["name"] == name}["purpose"]["value"]
+      _init_data_if_null
+      return @@channels_x_name[name]["purpose"]["value"]
     end
 
     # Replace user IDs with usernames by searching users.json
