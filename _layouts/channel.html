@@ -14,7 +14,12 @@ layout: page
     {% for message in day_data %}
       {% if message.subtype == "file_share" %}
         {% include filemessage.html %}
-      {% elsif message.subtype == nil %}
+      {% comment %} These types have no user directly, causing a nilclass error in message.html {% endcomment %}
+      {% elsif message.subtype == "file_comment" %}
+        <div class="message"><div class="msg"><em>File comment messages not yet supported</em></div></div>
+      {% elsif message.subtype == "bot_message" %}
+        <div class="message"><div class="msg"><em>Bot messages not yet supported</em></div></div>
+      {% else %}
         {% include message.html %}
       {% endif %}
     {% endfor %}
