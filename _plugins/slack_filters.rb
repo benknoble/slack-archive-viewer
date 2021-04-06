@@ -96,7 +96,7 @@ module Jekyll
       # name, and make the swap
       parsed_msg.scan(/<#([^|>]*)(\|([^>]*))?>/).each do |chid, _, chname|
         chname ||= channel_name(chid)
-        parsed_msg = parsed_msg.gsub(/<##{chid}>/, "<strong><a href='#{@context.registers[:site].baseurl}/#{chname}'>##{chname}</a></strong>")
+        parsed_msg = parsed_msg.gsub(/<##{chid}(\|[^>]*)?>/, "<strong><a href='#{@context.registers[:site].baseurl}/#{chname}'>##{chname}</a></strong>")
       end
       return parsed_msg
     end
