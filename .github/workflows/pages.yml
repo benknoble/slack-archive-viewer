@@ -21,8 +21,15 @@ jobs:
       - name: Pre-process archives
         run: ./preproc _data $(nproc)
 
+      - name: Setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+
       - name: Build
-        run: jekyll build --trace
+        run: |
+          gem install jekyll
+          jekyll build --trace
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.0
