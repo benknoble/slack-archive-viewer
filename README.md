@@ -11,5 +11,8 @@ Todo:
 - [x] Support file comment messages
 - [ ] Pages deploy
 - [ ] Merge subsequent archives chronologically
+- [ ] Threads
+- [ ] Fix triple-backtick markdown
+- [ ] HTML decode
 - [ ] Support attachments (related to bot messages)
 - [ ] Support messages from bots (there are several "kinds")
