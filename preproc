@@ -1,7 +1,9 @@
 #! /bin/sh
 
+set -eu
+
 main() {
-  find _data -name '*.json' -exec sh -c 'printf %s\\n %s-\\\\/-/-g wq | ed "$0"' {} \;
+  find "$1" -name '*.json' -print0 | xargs -0 -P"${2:-4}" -n1 sh -c 'printf %s\\n %s-\\\\/-/-g wq | ed -s "$0"'
 }
 
 main "$@"
