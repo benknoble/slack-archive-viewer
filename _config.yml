@@ -10,3 +10,6 @@ github_username: githubhandle
 
 # Build settings
 markdown: kramdown
+
+exclude:
+  - archives/
