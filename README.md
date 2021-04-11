@@ -9,7 +9,7 @@ WIP: port to Racket
 Todo:
 
 - [x] Support file comment messages
-- [ ] Pages deploy
+- [x] Pages deploy
 - [ ] Merge subsequent archives chronologically
 - [ ] Threads
 - [ ] Fix triple-backtick markdown
