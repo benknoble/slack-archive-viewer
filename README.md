@@ -10,7 +10,7 @@ Todo:
 
 - [x] Support file comment messages
 - [x] Pages deploy
-- [ ] Merge subsequent archives chronologically
+- [x] Merge subsequent archives chronologically
 - [ ] Threads
 - [ ] Fix triple-backtick markdown
 - [ ] HTML decode
