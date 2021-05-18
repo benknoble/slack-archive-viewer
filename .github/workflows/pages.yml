@@ -16,7 +16,7 @@ jobs:
         run: |
           mkdir _data
           cd _data
-          for archive in ../archives/*.zip ; do unzip "$archive" ; done
+          for archive in ../archives/*.zip ; do unzip -o "$archive" ; done
 
       - name: Pre-process archives
         run: ./preproc _data $(nproc)
