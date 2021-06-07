@@ -25,11 +25,10 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.0'
+          bundler-cache: true
 
       - name: Build
-        run: |
-          gem install jekyll
-          jekyll build --trace
+        run: bundle exec jekyll build --trace
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.0
