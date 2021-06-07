@@ -106,8 +106,12 @@
 ;; assume ordered by archive time
 (define (merge-channel-meta metas)
   (define last-channel-meta (last metas))
+  ;; if the channel has been renamed, we need to preserve metadata for the
+  ;; renaming for the reverse-lookup by name
+  (define names (set->list (apply set (map (λ (m) (hash-ref m 'name)) metas))))
   `#hash([id . ,(hash-ref last-channel-meta 'id)]
          [name . ,(hash-ref last-channel-meta 'name)]
+         [names . ,names]
          [purpose . ,(hash-ref last-channel-meta 'purpose)]))
 
 ;; keys:
@@ -169,7 +173,52 @@
 (define ((merge-metas merger) the-hash)
   (hash-update-all the-hash merger))
 
-(define merge-channel-metas (merge-metas merge-channel-meta))
+;; hash(id -> meta) -> hash(id -> meta)
+(define (add-renaming-metadata the-hash)
+  ;; [name -> meta]
+  (define name-metas
+    (for/list ([(k v) the-hash])
+      ;; k id, v meta
+      (define names (remove (hash-ref v 'name) (hash-ref v 'names)))
+      (for/hash ([name names])
+        (values (string->symbol name) (hash-set v 'name name)))))
+  (apply hash-union the-hash name-metas))
+
+(module+ test
+  (define-test-suite test-add-renaming-metadata
+    (test-equal? "single name"
+                 (add-renaming-metadata #hash([a . #hash([id . "a"]
+                                                         [name . "foo"]
+                                                         [names . ("foo")])]))
+                 #hash([a . #hash([id . "a"]
+                                  [name . "foo"]
+                                  [names . ("foo")])]))
+    (test-equal? "two names"
+                 (add-renaming-metadata #hash([a . #hash([id . "a"]
+                                                         [name . "foo"]
+                                                         [names . ("foo" "bar")])]))
+                 #hash([a . #hash([id . "a"]
+                                  [name . "foo"]
+                                  [names . ("foo" "bar")])]
+                       [bar . #hash([id . "a"]
+                                    [name . "bar"]
+                                    [names . ("foo" "bar")])]))
+    (test-equal? "three names"
+                 (add-renaming-metadata #hash([a . #hash([id . "a"]
+                                                         [name . "foo"]
+                                                         [names . ("foo" "bar" "baz")])]))
+                 #hash([a . #hash([id . "a"]
+                                  [name . "foo"]
+                                  [names . ("foo" "bar" "baz")])]
+                       [bar . #hash([id . "a"]
+                                    [name . "bar"]
+                                    [names . ("foo" "bar" "baz")])]
+                       [baz . #hash([id . "a"]
+                                    [name . "baz"]
+                                    [names . ("foo" "bar" "baz")])] )))
+  (run-tests test-add-renaming-metadata))
+
+(define merge-channel-metas (compose1 add-renaming-metadata (merge-metas merge-channel-meta)))
 (define merge-user-metas (merge-metas merge-user-meta))
 
 (struct meta (make-path merger))
