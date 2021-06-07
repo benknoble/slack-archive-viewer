@@ -12,14 +12,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
-      - name: Extract Archives
-        run: |
-          mkdir _data
-          cd _data
-          for archive in ../archives/*.zip ; do unzip -o "$archive" ; done
+      - name: Install Racket
+        uses: Bogdanp/setup-racket@v0.11
+        with:
+          architecture: 'x64'
+          distribution: 'full'
 
-      - name: Pre-process archives
-        run: ./preproc _data $(nproc)
+      - name: Extract Archives
+        run: racket unpack.rkt archives
 
       - name: Setup ruby
         uses: ruby/setup-ruby@v1
