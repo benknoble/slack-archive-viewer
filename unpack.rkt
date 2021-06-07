@@ -69,26 +69,33 @@
     (delete-directory/files temp-dir)])
 
 (define (run-main archives-dir)
-  ;; 0. Make _data dir if needed
+  (displayln "0. Make _data dir if needed")
   (unless (directory-exists? "_data")
     (make-directory "_data"))
-  ;; 1. Gather the list of archives to process
+
+  (displayln "1. Gather the list of archives to process")
   (define zip-locs
     (sort (glob (build-path archives-dir "*.zip"))
           path<?))
-  ;; 2. Associate each with a temporary directory
+
+  (displayln "2. Associate each with a temporary directory")
   (define archives
     (map (λ (zip-loc) (archive zip-loc (make-temporary-file "extract-~a" 'directory)))
          zip-locs))
-  ;; 3. Extract each archive
+
+  (displayln "3. Extract each archive")
   (for ([archive archives]) (extract archive))
-  ;; 4. Gather all the metadata into _data
+
+  (displayln "4. Gather all the metadata into _data")
   (meta:run-main (map archive-temp-dir archives))
-  ;; 5. Copy all the channel files into _data
+
+  (displayln "5. Copy all the channel files into _data")
   (for ([archive archives]) (copy-to-_data archive))
-  ;; 6. Clean up after ourselves
+
+  (displayln "6. Clean up after ourselves")
   (for ([archive archives]) (delete archive))
-  ;; 7. Run the preprocessing script
+
+  (displayln "7. Run the preprocessing script")
   (unless (system* "./preproc" "_data")
     (error "preproc failed")))
 
