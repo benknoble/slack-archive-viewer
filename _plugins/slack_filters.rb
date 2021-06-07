@@ -23,9 +23,9 @@ module Jekyll
       if @@data == nil
         puts "slack filters: initializing site data cache"
         @@data ||= @context.registers[:site].data
-        @@users_x_id ||= @@data["users"].to_h {|user| [user["id"], user]}
-        @@channels_x_id ||= @@data["channels"].to_h {|channel| [channel["id"], channel]}
-        @@channels_x_name ||= @@data["channels"].to_h {|channel| [channel["name"], channel]}
+        @@users_x_id ||= @@data["users"]
+        @@channels_x_id ||= @@data["channels"]
+        @@channels_x_name ||= @@data["channels"].transform_keys { |cid| @@data["channels"][cid]["name"] }
         puts "slack filters: initialized site data cache"
       end
     end
