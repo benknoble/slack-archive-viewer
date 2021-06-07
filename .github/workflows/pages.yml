@@ -17,6 +17,8 @@ jobs:
         with:
           architecture: 'x64'
           distribution: 'full'
+          variant: 'CS'
+          version: '8.0'
 
       - name: Extract Archives
         run: racket unpack.rkt archives
