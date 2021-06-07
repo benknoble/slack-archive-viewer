@@ -11,7 +11,6 @@
 
 (define/match (extract the-archive)
   [((archive zip-loc temp-dir))
-   (make-directory temp-dir)
    (parameterize ([current-directory temp-dir])
      (unzip zip-loc))])
 
@@ -77,14 +76,9 @@
   (define zip-locs
     (sort (glob (build-path archives-dir "*.zip"))
           path<?))
-  (define temp-dir (find-system-path 'temp-dir))
   ;; 2. Associate each with a temporary directory
   (define archives
-    (map (λ (zip-loc)
-           (define basename (file-name-from-path zip-loc))
-           (define basename-no-ext (path-replace-extension basename ""))
-           (define temp-loc (build-path temp-dir basename-no-ext))
-           (archive zip-loc temp-loc))
+    (map (λ (zip-loc) (archive zip-loc (make-temporary-file "extract-~a" 'directory)))
          zip-locs))
   ;; 3. Extract each archive
   (for ([archive archives]) (extract archive))
