@@ -59,10 +59,11 @@
      (filter (λ (name) (and (not (path-has-extension? name ".json"))
                             (directory-exists? name)))
              (directory-list temp-dir #:build? #t)))
-   (for ([channel channels])
-     (copy-directory/files channel
-                           (build-path "_data" (file-name-from-path channel))
-                           #t))])
+   (for-each (λ (channel)
+               (copy-directory/files channel
+                                     (build-path "_data" (file-name-from-path channel))
+                                     #t))
+             channels )])
 
 (define/match (delete the-archive)
   [((archive _ temp-dir))
@@ -90,16 +91,16 @@
          zip-locs))
 
   (displayln "3. Extract each archive")
-  (for ([archive archives]) (extract archive))
+  (for-each extract archives)
 
   (displayln "4. Gather all the metadata into _data")
   (meta:run-main (map archive-temp-dir archives))
 
   (displayln "5. Copy all the channel files into _data")
-  (for ([archive archives]) (copy-to-_data archive))
+  (for-each copy-to-_data archives)
 
   (displayln "6. Clean up after ourselves")
-  (for ([archive archives]) (delete archive))
+  (for-each delete archives)
 
   (displayln "7. Pre-process json slashes")
   (preproc-json "_data"))

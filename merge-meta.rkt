@@ -243,7 +243,8 @@
   (update-meta (make-path) merged-metadata))
 
 (define (run-main meta-paths)
-  (for ([meta metas]) (merge-meta meta meta-paths)))
+  (for-each (λ (meta) (merge-meta meta meta-paths))
+            metas))
 
 (module+ main
   (command-line
