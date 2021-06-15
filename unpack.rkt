@@ -68,6 +68,12 @@
   [((archive _ temp-dir))
     (delete-directory/files temp-dir)])
 
+(define (preproc-json dir)
+  (for/async ([filepath (glob (build-path dir "**.json"))])
+    (define contents (file->string filepath))
+    (define unescaped (regexp-replace* #rx"\\\\/" contents "/"))
+    (display-to-file unescaped filepath #:exists 'truncate/replace)))
+
 (define (run-main archives-dir)
   (displayln "0. Make _data dir if needed")
   (unless (directory-exists? "_data")
@@ -96,8 +102,7 @@
   (for ([archive archives]) (delete archive))
 
   (displayln "7. Pre-process json slashes")
-  (unless (system* "./preproc" "_data")
-    (error "preproc failed")))
+  (preproc-json "_data"))
 
 (module+ main
   (command-line
