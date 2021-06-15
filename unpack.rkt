@@ -95,7 +95,7 @@
   (displayln "6. Clean up after ourselves")
   (for ([archive archives]) (delete archive))
 
-  (displayln "7. Run the preprocessing script")
+  (displayln "7. Pre-process json slashes")
   (unless (system* "./preproc" "_data")
     (error "preproc failed")))
 
