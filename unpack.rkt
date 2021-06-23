@@ -2,15 +2,13 @@
 
 (provide (all-defined-out))
 
-(require file/glob
+(require "private/files.rkt"
          (prefix-in meta: "merge-meta.rkt")
-         (prefix-in archive: "private/archive.rkt"))
+         (prefix-in archive: "private/archive.rkt")
+         (prefix-in json: "private/json.rkt"))
 
 (define (preproc-json dir)
-  (for/async ([filepath (glob (build-path dir "**.json"))])
-    (define contents (file->string filepath))
-    (define unescaped (regexp-replace* #rx"\\\\/" contents "/"))
-    (display-to-file unescaped filepath #:exists 'truncate/replace)))
+  (async-edit json:unescape (json:find-all dir)))
 
 (define (run-main archives-dir)
   (displayln "0. Make _data dir if needed")
