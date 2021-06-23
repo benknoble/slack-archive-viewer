@@ -1,14 +1,25 @@
 #lang racket
 
 (provide (struct-out archive)
+         make-archive
+         find-archives
          extract
          copy-to-_data
          delete)
 
 (require file/unzip
+         file/glob
          "files.rkt")
 
 (struct archive [zip-loc temp-dir])
+
+(define (make-archive zip-loc)
+  (archive zip-loc (make-temporary-file "extract-~a" 'directory)))
+
+(define (find-archives dir)
+  (define zips (sort (glob (build-path dir "*.zip"))
+                     path<?))
+  (map make-archive zips))
 
 (define/match (extract the-archive)
   [((archive zip-loc temp-dir))

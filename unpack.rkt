@@ -18,28 +18,21 @@
     (make-directory "_data"))
 
   (displayln "1. Gather the list of archives to process")
-  (define zip-locs
-    (sort (glob (build-path archives-dir "*.zip"))
-          path<?))
+  (define archives (archive:find-archives archives-dir))
 
-  (displayln "2. Associate each with a temporary directory")
-  (define archives
-    (map (λ (zip-loc) (archive:archive zip-loc (make-temporary-file "extract-~a" 'directory)))
-         zip-locs))
-
-  (displayln "3. Extract each archive")
+  (displayln "2. Extract each archive")
   (for-each archive:extract archives)
 
-  (displayln "4. Gather all the metadata into _data")
+  (displayln "3. Gather all the metadata into _data")
   (meta:run-main (map archive:archive-temp-dir archives))
 
-  (displayln "5. Copy all the channel files into _data")
+  (displayln "4. Copy all the channel files into _data")
   (for-each archive:copy-to-_data archives)
 
-  (displayln "6. Clean up after ourselves")
+  (displayln "5. Clean up after ourselves")
   (for-each archive:delete archives)
 
-  (displayln "7. Pre-process json slashes")
+  (displayln "6. Pre-process json slashes")
   (preproc-json "_data"))
 
 (module+ main
