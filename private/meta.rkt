@@ -10,7 +10,7 @@
          merge-user-metas
          merge-metas
          add-renaming-metadata
-         (struct-out meta))
+         (struct-out meta-info))
 
 (require syntax/parse/define
          racket/hash
@@ -213,4 +213,4 @@
 (define merge-channel-metas (compose1 add-renaming-metadata (merge-metas merge-channel-meta)))
 (define merge-user-metas (merge-metas merge-user-meta))
 
-(struct meta (make-path merger))
+(struct meta-info [make-path merger])
