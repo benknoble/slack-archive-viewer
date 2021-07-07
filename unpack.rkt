@@ -6,7 +6,8 @@
          (prefix-in meta: "merge-meta.rkt")
          (prefix-in archive: "private/archive.rkt")
          (prefix-in json: "private/json.rkt")
-         "private/steps.rkt")
+         "private/steps.rkt"
+         (prefix-in privacy: "private/privacy.rkt"))
 
 (define (preproc-json dir)
   (async-edit json:unescape (json:find-all dir)))
@@ -33,6 +34,9 @@
 
   step "Clean up after ourselves"
   (for-each archive:delete archives)
+
+  step "Remove messages from privacy list"
+  (privacy:clean "_data")
 
   step "Pre-process json slashes"
   (preproc-json "_data"))
