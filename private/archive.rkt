@@ -5,7 +5,8 @@
          find-archives
          extract
          copy-to-_data
-         delete)
+         delete
+         channels)
 
 (require file/unzip
          file/glob
@@ -26,17 +27,18 @@
    (parameterize ([current-directory temp-dir])
      (unzip zip-loc))])
 
+(define (channels dir)
+  (filter (λ (name) (and (not (path-has-extension? name ".json"))
+                         (directory-exists? name)))
+          (directory-list dir #:build? #t)))
+
 (define/match (copy-to-_data the-archive)
   [((archive _ temp-dir))
-   (define channels
-     (filter (λ (name) (and (not (path-has-extension? name ".json"))
-                            (directory-exists? name)))
-             (directory-list temp-dir #:build? #t)))
    (for-each (λ (channel)
                (copy-directory/files* channel
-                                     (build-path "_data" (file-name-from-path channel))
-                                     #t))
-             channels )])
+                                      (build-path "_data" (file-name-from-path channel))
+                                      #t))
+             (channels temp-dir))])
 
 (define/match (delete the-archive)
   [((archive _ temp-dir))
