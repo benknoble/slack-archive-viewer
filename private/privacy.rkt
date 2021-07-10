@@ -21,5 +21,5 @@
 (define ((filter-messages-by-user-ids user-ids) the-json)
   (filter (negate (λ (message)
                      (set-member? user-ids
-                                  (string->symbol (hash-ref message 'user)))))
+                                  (string->symbol (hash-ref message 'user "")))))
           the-json))
