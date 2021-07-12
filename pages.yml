@@ -21,7 +21,7 @@ jobs:
           version: '8.0'
 
       - name: Extract Archives
-        run: racket unpack.rkt archives
+        run: racket -t unbuffer.rkt -t unpack.rkt archives
 
       - name: Setup ruby
         uses: ruby/setup-ruby@v1
