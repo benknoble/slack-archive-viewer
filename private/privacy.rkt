@@ -5,17 +5,15 @@
 (require "archive.rkt"
          "files.rkt"
          (prefix-in json: "json.rkt")
+         "config.rkt"
          json)
 
 (define (clean dir)
-  (define user-ids-to-exclude
-    (and
-      (file-exists? "privacy-list.rkt")
-      (dynamic-require "privacy-list.rkt" 'private-user-ids (thunk #f))))
-  (when user-ids-to-exclude
+  (define-from-privacy-list private-user-ids (set))
+  (when (not (set-empty? private-user-ids))
     (define channel-dirs (channels dir))
     (define all-json (append-map json:find-all channel-dirs))
-    (async-edit (compose1 jsexpr->string (filter-messages-by-user-ids user-ids-to-exclude) string->jsexpr)
+    (async-edit (compose1 jsexpr->string (filter-messages-by-user-ids private-user-ids) string->jsexpr)
                 all-json)))
 
 (define ((filter-messages-by-user-ids user-ids) the-json)
