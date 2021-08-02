@@ -3,3 +3,7 @@ _site
 _data
 _gh-pages.yml
 .jekyll-metadata
+\#*
+.\#*
+compiled/
+/doc/
