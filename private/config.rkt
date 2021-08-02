@@ -2,7 +2,9 @@
 
 (provide define-dynamic-definer
          define-from-privacy-list
-         define-from-config)
+         privacy-list
+         define-from-config
+         config)
 
 (require (for-syntax racket/base
                      racket/syntax)
@@ -11,11 +13,13 @@
 (define-syntax-parse-rule (define-dynamic-definer name:id path:string)
   #:with definer (format-id this-syntax #:source this-syntax
                             "define-from-~a" (syntax-e #'name))
-  (define-syntax-parse-rule (definer var:id {~optional default #:defaults ([default #'#f])})
-    (define var
+  (begin
+    (define (name var [default #f])
       (if (file-exists? path)
-        (dynamic-require path 'var (λ () default))
-        default))))
+        (dynamic-require path var (λ () default))
+        default))
+    (define-syntax-parse-rule (definer var:id {~optional default:expr #:defaults ([default #'#f])})
+      (define var (name 'var default)))))
 
 (define-dynamic-definer privacy-list "privacy-list.rkt")
 (define-dynamic-definer config "slack-config.rkt")
