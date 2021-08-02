@@ -18,8 +18,8 @@
       (if (file-exists? path)
         (dynamic-require path var (λ () default))
         default))
-    (define-syntax-parse-rule (definer var:id {~optional default:expr #:defaults ([default #'#f])})
-      (define var (name 'var default)))))
+    (define-syntax-parse-rule (definer var:id {~optional default:expr})
+      (define var (name 'var (... (~? default)))))))
 
 (define-dynamic-definer privacy-list "privacy-list.rkt")
 (define-dynamic-definer config "slack-config.rkt")
