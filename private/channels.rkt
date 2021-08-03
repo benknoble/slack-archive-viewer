@@ -5,7 +5,7 @@
 (require racket/string)
 
 (define (channel-json->pollen-text channel)
-  (string-join (map message-json->pollen-text channel) "\n"))
+  (cons "#lang pollen" (map message-json->pollen-text channel)))
 
 (define (message-json->pollen-text message)
   (format "◊~a[~a]{~a}"
