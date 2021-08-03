@@ -10,7 +10,8 @@
 
 (require file/unzip
          file/glob
-         "files.rkt")
+         "files.rkt"
+         "channels.rkt")
 
 (struct archive [zip-loc temp-dir])
 
@@ -26,11 +27,6 @@
   [((archive zip-loc temp-dir))
    (parameterize ([current-directory temp-dir])
      (unzip zip-loc))])
-
-(define (channels dir)
-  (filter (λ (name) (and (not (path-has-extension? name ".json"))
-                         (directory-exists? name)))
-          (directory-list dir #:build? #t)))
 
 (define/match (copy-to-_data the-archive)
   [((archive _ temp-dir))

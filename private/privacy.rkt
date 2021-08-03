@@ -2,17 +2,15 @@
 
 (provide clean)
 
-(require "archive.rkt"
+(require "channels.rkt"
          "files.rkt"
-         (prefix-in json: "json.rkt")
          "config.rkt"
          json)
 
 (define (clean dir)
   (define-from-privacy-list private-user-ids (set))
   (when (not (set-empty? private-user-ids))
-    (define channel-dirs (channels dir))
-    (define all-json (append-map json:find-all channel-dirs))
+    (define all-json (all-channel-files dir))
     (async-edit (compose1 jsexpr->string (filter-messages-by-user-ids private-user-ids) string->jsexpr)
                 all-json)))
 

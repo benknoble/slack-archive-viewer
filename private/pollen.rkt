@@ -4,12 +4,12 @@
          ->pollen)
 
 (require racket/string
-         racket/function
          racket/future
          racket/list
          racket/file
          "json.rkt"
-         "files.rkt")
+         "files.rkt"
+         "channels.rkt")
 
 (define (channel-json->pollen-text channel)
   (cons "#lang pollen" (map message-json->pollen-text channel)))
@@ -26,8 +26,7 @@
 
 (define (->pollen data-dir)
   (define channel-file->pollen (compose1 channel-json->pollen-text file->json))
-  (define channel-files (filter (negate (curry regexp-match #rx"(user|channel).json$"))
-                                (find-all data-dir)))
+  (define channel-files (all-channel-files data-dir))
   (define output-files
     (map (λ (p)
            (define with-pollen-ext (path-replace-extension p ".html.pm"))
