@@ -14,11 +14,7 @@
 
 (define-steps (run-main archives-dir)
   step "Create or clean _data dir"
-  (cond
-    [(directory-exists? "_data")
-     (delete-directory/files "_data")
-     (make-directory "_data")]
-    [else (make-directory "_data")])
+  (mkdir! "_data")
 
   step "Gather the list of archives to process"
   (define archives (archive:find-archives archives-dir))

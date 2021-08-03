@@ -1,7 +1,8 @@
 #lang racket
 
 (provide copy-directory/files*
-         async-edit)
+         async-edit
+         mkdir!)
 
 ;; from https://github.com/racket/racket/blob/master/racket/collects/racket/file.rkt
 ;; with copy-file's exists-ok? (and a hack for directories)
@@ -47,3 +48,10 @@
     (define contents (file->string filepath))
     (define edited (editor contents))
     (display-to-file edited filepath #:exists 'truncate/replace)))
+
+(define (mkdir! dir)
+  (cond
+    [(directory-exists? dir)
+     (delete-directory/files dir)
+     (make-directory dir)]
+    [else (make-directory dir)]))
