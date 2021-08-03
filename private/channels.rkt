@@ -9,8 +9,8 @@
          "json.rkt")
 
 (define (channels dir)
-  (filter (λ (name) (and (not (path-has-extension? name ".json"))
-                         (directory-exists? name)))
+  (filter (conjoin (negate (curryr path-has-extension? ".json"))
+                   directory-exists?)
           (directory-list dir #:build? #t)))
 
 (define all-channel-files
