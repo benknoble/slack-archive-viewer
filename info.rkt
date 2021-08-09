@@ -1,6 +1,7 @@
 #lang info
 (define collection "slack-archive-viewer")
 (define deps '("sass"
+               "jsond"
                "base"))
 (define build-deps '("scribble-lib" "racket-doc" "rackunit-lib"))
 (define compile-omit-paths '("css"
@@ -10,7 +11,8 @@
                              "_data"
                              "_includes"
                              "sample-data"
-                             "privacy-list-demo.rkt"))
+                             "privacy-list-demo.rkt"
+                             "pollen"))
 (define scribblings '(("scribblings/slack-archive-viewer.scrbl" ())))
 (define pkg-desc "Generates a website to view slack archives")
 (define version "0.0")
