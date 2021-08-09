@@ -7,6 +7,7 @@
          racket/future
          racket/list
          racket/file
+         racket/function
          "json.rkt"
          "files.rkt"
          "channels.rkt")
@@ -16,12 +17,8 @@
 
 (define (message-json->pollen-text message)
   (format "◊~a[~a]{~a}"
-          (or (hash-ref message 'subtype #f)
-              "message")
-          (string-join
-            (for/list ([(k v) (in-hash message)])
-              (format "#:~a ~v" k v))
-            " ")
+          (or (hash-ref message 'subtype #f) "message")
+          (string-join (hash-map message (curry format "#:~a ~v")) " ")
           (hash-ref message 'text "")))
 
 (define (->pollen data-dir)
