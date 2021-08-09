@@ -10,7 +10,8 @@
          racket/function
          "json.rkt"
          "files.rkt"
-         "channels.rkt")
+         "channels.rkt"
+         "steps.rkt")
 
 (define (channel-json->pollen-text channel)
   (cons "#lang pollen" (map message-json->pollen-text channel)))
@@ -21,7 +22,11 @@
           (string-join (hash-map message (curry format "#:~a ~v")) " ")
           (hash-ref message 'text "")))
 
-(define (->pollen data-dir)
+(define-steps (->pollen data-dir)
+  step "Make pollen directory tree"
+  (mkdir! "pollen")
+
+  step "Convert channel files to pollen"
   (define channel-file->pollen (compose1 channel-json->pollen-text file->json))
   (define channel-files (all-channel-files data-dir))
   (define output-files
@@ -31,9 +36,10 @@
            (define in-pollen (cons "pollen" dir+file))
            (path->complete-path (apply build-path in-pollen)))
          channel-files))
-  (mkdir! "pollen")
   (for/async ([channel-file channel-files]
               [output-file output-files])
     (define pollen-text (channel-file->pollen channel-file))
     (display-lines-to-file pollen-text output-file))
   output-files)
+
+;; vim: lw+=define-steps
