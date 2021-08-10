@@ -27,13 +27,14 @@
           (hash-ref message 'text "")))
 
 (define-steps (->pollen data-dir)
-  step "Make pollen directory tree"
+  step "Make pollen directory tree" ;{{{
   (mkdir! "pollen")
   (for-each mkdir!
             (map (compose1 (curry build-path "pollen") file-name-from-path)
                  (channel-names data-dir)))
+  ;}}}
 
-  step "Convert channel files to pollen"
+  step "Convert channel files to pollen" ;{{{
   (define channel-file->pollen (compose1 channel-json->pollen-text file->json))
   (define channel-files (all-channel-files data-dir))
   (define output-files
@@ -47,8 +48,9 @@
               [output-file output-files])
     (define pollen-text (channel-file->pollen channel-file))
     (display-lines-to-file pollen-text output-file))
+  ;}}}
 
-  step "Convert metadata to jsond"
+  step "Convert metadata to jsond" ;{{{
   (define meta-files (list ((meta-info-make-path channels) data-dir)
                            ((meta-info-make-path users) data-dir)))
   (define output-meta-files
@@ -62,6 +64,8 @@
               [output-meta-file output-meta-files])
     (define jsond-text (cons "#lang jsond" (cons "#:name meta" (file->lines meta-file))))
     (display-lines-to-file jsond-text output-meta-file))
+  ;}}}
+
 
   (values output-files output-meta-files))
 
