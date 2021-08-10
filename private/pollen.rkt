@@ -1,6 +1,7 @@
 #lang racket/base
 
-(provide channel-json->pollen-text
+(provide static-for-pollen
+         channel-json->pollen-text
          ->pollen)
 
 (require racket/string
@@ -9,6 +10,8 @@
          racket/file
          racket/path
          racket/function
+         racket/runtime-path
+         (for-syntax racket/base)
          "json.rkt"
          "files.rkt"
          (only-in "channels.rkt" all-channel-files)
@@ -16,6 +19,12 @@
          "meta.rkt"
          (only-in "../merge-meta.rkt" users channels)
          "steps.rkt")
+
+(define-runtime-path-list static-for-pollen
+                          (map (λ (p) (build-path "for-pollen" p))
+                               '("css"
+                                 "_sass"
+                                 )))
 
 (define (channel-json->pollen-text channel)
   (cons "#lang pollen" (map message-json->pollen-text channel)))
@@ -37,7 +46,7 @@
   step "Convert channel files to pollen" ;{{{
   (define channel-file->pollen (compose1 channel-json->pollen-text file->json))
   (define channel-files (all-channel-files data-dir))
-  (define output-files
+  (define output-channel-files
     (map (λ (p)
            (define with-pollen-ext (path-replace-extension p ".html.pm"))
            (define dir+file (take-right (explode-path with-pollen-ext) 2))
@@ -45,7 +54,7 @@
            (path->complete-path (apply build-path in-pollen)))
          channel-files))
   (for/async ([channel-file channel-files]
-              [output-file output-files])
+              [output-file output-channel-files])
     (define pollen-text (channel-file->pollen channel-file))
     (display-lines-to-file pollen-text output-file))
   ;}}}
@@ -66,7 +75,18 @@
     (display-lines-to-file jsond-text output-meta-file))
   ;}}}
 
+  step "Copy static files" ;{{{
+  (define output-static-files
+    (map (λ (static-file-or-dir)
+           (build-path "pollen" (file-name-from-path static-file-or-dir)))
+         static-for-pollen))
+  (for/async ([static-file-or-dir static-for-pollen]
+              [output-static-file output-static-files])
+    (copy-directory/files* static-file-or-dir output-static-file))
+  ;}}}
 
-  (values output-files output-meta-files))
+  `#hash((channels . ,output-channel-files)
+         (metas . ,output-meta-files)
+         (statics . ,output-static-files)))
 
 ;; vim: lw+=define-steps
