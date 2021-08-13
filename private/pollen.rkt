@@ -11,6 +11,7 @@
          racket/path
          racket/function
          racket/runtime-path
+         json
          (for-syntax racket/base)
          "json.rkt"
          "files.rkt"
@@ -69,9 +70,17 @@
            (define in-pollen (list "pollen" bare-name))
            (path->complete-path (apply build-path in-pollen)))
          meta-files))
+  (define (make-reverse-lookup jsdict)
+    (for/hash ([(k v) (in-hash jsdict)])
+      (values (string->symbol (hash-ref v 'name)) v)))
   (for/async ([meta-file meta-files]
               [output-meta-file output-meta-files])
-    (define jsond-text (cons "#lang jsond" (cons "#:name meta" (file->lines meta-file))))
+    (define original-text (file->lines meta-file))
+    (define as-meta-text (cons "#:name meta" original-text))
+    (define reverse-lookup-text
+      (list "#:name reverse"
+            (jsexpr->string (make-reverse-lookup (string->jsexpr (string-join original-text))))))
+    (define jsond-text (append '("#lang jsond") as-meta-text reverse-lookup-text))
     (display-lines-to-file jsond-text output-meta-file))
   ;}}}
 
