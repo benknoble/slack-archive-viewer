@@ -122,7 +122,7 @@
   (define user-name (get-user-name user-id))
   (define image-link (get-image-link user-id))
   (define time (format-time (attr-ref attrs 'ts)))
-  (txexpr* 'div
+  (txexpr* '@ ;; splice
            empty
            (txexpr* 'div
                     empty
@@ -152,7 +152,7 @@
   (define file-url (hash-ref the-file 'permalink_public "#"))
   (define file-title (hash-ref the-file 'title ""))
   (define file-comment (hash-ref (hash-ref the-file 'initial_comment #hash()) 'comment #f))
-  (txexpr* 'div
+  (txexpr* '@ ;; splice
            empty
            (txexpr* 'div
                     empty
