@@ -87,12 +87,10 @@
           (define the-name (or channel-name (get-channel-name channel-id)))
           (xexpr->html
             (txexpr* 'strong null
-                     (txexpr* 'a `((href ,the-name))
-                              "#" the-name))))]
+                     (link the-name "#" the-name))))]
       [,(regexp (format "<(~v)\\|([^[:space:]]+)>" (object-name url-regexp)))
        ,(λ (input url link-text)
-          (xexpr->html (txexpr* 'a `((href ,url))
-                                link-text)))]
+          (xexpr->html (link url link-text)))]
       ;; | -> \|
       ;; first escape the bar in the pattern (regexp)
       ;; \| -> \|
@@ -164,7 +162,7 @@
                              (txexpr* 'div '((class "username")) user-name)
                              (txexpr* 'div '((class "time")) time)
                              (txexpr* 'div '((class "msg"))
-                                      "Uploaded file: " (txexpr* 'a `((href ,file-url)) file-title))
+                                      "Uploaded file: " (link file-url file-title))
                              (if file-comment
                                (txexpr* 'div '((class "msg")) "Comment: " file-comment)
                                "")))
@@ -181,5 +179,15 @@
            (txexpr* 'div
                     '((class "msg"))
                     (txexpr* 'em empty "Bot messages not yet supported"))))
+
+(define (link url #:class [class-name #f] . tx-elements)
+  (let* ([tx-elements (if (null? tx-elements)
+                        (list url)
+                        tx-elements)]
+         [link-tx (txexpr 'a empty tx-elements)]
+         [link-tx (attr-set link-tx 'href url)])
+    (if class-name
+      (attr-set link-tx 'class class-name)
+      link-tx)))
 
 ;; vim: lw+=define-tag-function,define-dynamic-definer,define/caching
