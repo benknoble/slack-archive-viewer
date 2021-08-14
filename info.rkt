@@ -2,6 +2,10 @@
 (define collection "slack-archive-viewer")
 (define deps '("sass"
                "jsond"
+               "pollen"
+               "txexpr"
+               "sugar"
+               "markdown"
                "base"))
 (define build-deps '("scribble-lib" "racket-doc" "rackunit-lib"))
 (define compile-omit-paths '("css"

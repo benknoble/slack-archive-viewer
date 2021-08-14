@@ -25,6 +25,7 @@
                           (map (λ (p) (build-path "for-pollen" p))
                                '("css"
                                  "_sass"
+                                 "pollen.rkt"
                                  )))
 
 (define (channel-json->pollen-text channel)
