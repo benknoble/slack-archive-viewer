@@ -26,6 +26,7 @@
                                '("css"
                                  "_sass"
                                  "pollen.rkt"
+                                 "template.html.p"
                                  )))
 
 (define (channel-json->pollen-text channel)

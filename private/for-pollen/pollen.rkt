@@ -3,6 +3,7 @@
 (require syntax/parse/define
          txexpr
          pollen/tag
+         pollen/file
          (only-in markdown parse-markdown)
          sugar
          net/url-string
@@ -189,5 +190,14 @@
     (if class-name
       (attr-set link-tx 'class class-name)
       link-tx)))
+
+(define (make-absolute-url path)
+  (define source-path (->string path))
+  (define output-path (->string (->output-path source-path)))
+  (define rel-path (regexp-replace (format "^~a" (regexp-quote (->string (current-directory)))) output-path ""))
+  (define sans-index (regexp-replace #rx"index\\.html$" rel-path ""))
+  (regexp-replace #rx"^//"
+                  (format "~a/~a" (config 'base-url "/") sans-index)
+                  "/"))
 
 ;; vim: lw+=define-tag-function,define-dynamic-definer,define/caching
