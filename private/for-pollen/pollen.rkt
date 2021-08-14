@@ -77,20 +77,20 @@
   (regexp-replaces
     text
     `([#rx"<@([^|>]*)(\\|([^>]*))?>"
-       ,(λ (user-id _ user-name)
+       ,(λ (input user-id _ user-name)
           (define the-name (or user-name (get-user-name user-id)))
           (xexpr->html
             (txexpr* 'strong null
                      "@" the-name)))]
       [#rx"<#([^|>]*)(\\|([^>]*))?>"
-       ,(λ (channel-id _ channel-name)
+       ,(λ (input channel-id _ channel-name)
           (define the-name (or channel-name (get-channel-name channel-id)))
           (xexpr->html
             (txexpr* 'strong null
                      (txexpr* 'a `((href ,the-name))
                               "#" the-name))))]
       [,(regexp (format "<(~v)\\|([^[:space:]]+)>" (object-name url-regexp)))
-       ,(λ (url link-text)
+       ,(λ (input url link-text)
           (xexpr->html (txexpr* 'a `((href ,url))
                                 link-text)))]
       ;; | -> \|
