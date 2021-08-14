@@ -8,7 +8,7 @@
          net/url-string
          ;; must not be relative path because this file is used in a separate
          ;; pollen program
-         slack-archive-viewer/private/meta
+         (only-in slack-archive-viewer/private/meta meta-info-make-path)
          slack-archive-viewer/merge-meta
          slack-archive-viewer/private/config)
 
