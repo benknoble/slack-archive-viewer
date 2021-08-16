@@ -13,7 +13,8 @@
          slack-archive-viewer/merge-meta
          slack-archive-viewer/private/config)
 
-(provide (all-defined-out))
+(provide (all-defined-out)
+         config)
 
 (define (attrs-update attrs key value)
   ;; (list-set attrs (index-of attrs (assq key attrs)) (list key value))
