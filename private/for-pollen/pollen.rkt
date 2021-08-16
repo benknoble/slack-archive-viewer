@@ -230,11 +230,11 @@
     (children (->symbol (format "~a.html" title))
               (get-pagetree "index.ptree")))
   (when/splice title
-    (txexpr* 'ol '((class "channel-overview"))
-             (map (λ (date-page)
-                    (txexpr* 'li empty
-                             (link (format "~a/~a" title date-page)
-                                   (->string date-page))))
-                  date-pages))))
+    (txexpr 'ol '((class "channel-overview"))
+            (map (λ (date-page)
+                   (txexpr* 'li empty
+                            (link (format "~a/~a" title date-page)
+                                  (->string date-page))))
+                 date-pages))))
 
 ;; vim: lw+=define-tag-function,define-dynamic-definer,define/caching,when/splice
