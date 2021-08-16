@@ -38,17 +38,17 @@
 ;; pagetree? -> string?
 (define (pagetree->string tree [indent 0])
   (string-join
-    (map (curryr pagetree-node->string indent) tree)
+    (map (curryr pagetree-subtree->string indent) tree)
     "\n"))
 
-(define (pagetree-node->string node [indent 0])
+(define (pagetree-subtree->string subtree [indent 0])
   (cond
-    [(list? node)
+    [(list? subtree)
      (format "~a◊~a{~n~a}"
              (make-indent indent)
-             (first node)
-             (pagetree->string (rest node) (+ indent 2)))]
-    [else (format "~a~a" (make-indent indent) (->string node))]))
+             (first subtree)
+             (pagetree->string (rest subtree) (+ indent 2)))]
+    [else (format "~a~a" (make-indent indent) (->string subtree))]))
 
 (define (channel-json->pollen-text channel)
   (cons "#lang pollen" (map message-json->pollen-text channel)))
