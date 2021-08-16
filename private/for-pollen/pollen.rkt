@@ -6,6 +6,7 @@
          pollen/tag
          pollen/file
          pollen/pagetree
+         pollen/setup
          (only-in markdown parse-markdown)
          sugar
          net/url-string
@@ -40,9 +41,9 @@
   (apply f attrs elems))
 
 (define-dynamic-definer users-data
-  (path-replace-extension ((meta-info-make-path users) 'same) ".rkt"))
+  (path-replace-extension ((meta-info-make-path users) (current-project-root)) ".rkt"))
 (define-dynamic-definer channels-data
-  (path-replace-extension ((meta-info-make-path channels) 'same) ".rkt"))
+  (path-replace-extension ((meta-info-make-path channels) (current-project-root)) ".rkt"))
 
 (define/caching (get-user-name user-id)
   (let ([user-id (->symbol user-id)])
@@ -212,7 +213,7 @@
 (define (make-absolute-url path)
   (define source-path (->string path))
   (define output-path (->string (->output-path source-path)))
-  (define rel-path (regexp-replace (format "^~a" (regexp-quote (->string (current-directory)))) output-path ""))
+  (define rel-path (regexp-replace (format "^~a" (regexp-quote (->string (current-project-root)))) output-path ""))
   (define sans-index (regexp-replace #rx"index\\.html$" rel-path ""))
   (regexp-replace #rx"^//"
                   (format "~a/~a" (config 'base-url "/") sans-index)
@@ -228,7 +229,7 @@
   (define title (select-from-metas 'title (current-metas)))
   (define date-pages
     (children (->symbol (format "~a.html" title))
-              (get-pagetree "index.ptree")))
+              (get-pagetree (build-path (current-project-root) "index.ptree"))))
   (when/splice title
     (txexpr 'ol '((class "channel-overview"))
             (map (λ (date-page)
