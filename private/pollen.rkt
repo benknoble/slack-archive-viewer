@@ -52,7 +52,7 @@
 
 (define (channel-json->pollen-text channel)
   `("#lang pollen"
-    "◊div[#:class \"messages\"]{"
+    "◊messages{"
     ,@(map message-json->pollen-text channel)
     "}"))
 

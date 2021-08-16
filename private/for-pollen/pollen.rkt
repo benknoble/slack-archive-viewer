@@ -185,6 +185,8 @@
                     '((class "msg"))
                     (txexpr* 'em empty "Bot messages not yet supported"))))
 
+(define messages (default-tag-function 'div #:class "messages"))
+
 (define (link url #:class [class-name #f] . tx-elements)
   (let* ([tx-elements (if (null? tx-elements)
                         (list url)
