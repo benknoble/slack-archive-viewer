@@ -68,7 +68,7 @@
     (define purpose (hash-ref channel 'purpose))
     (hash-ref purpose 'value)))
 
-(define (slackify text)
+(define (slackify . text)
   ;; TODO the original replaces
   ;; - slack user @s
   ;; - slack channel #s
@@ -76,7 +76,7 @@
   ;; and escapes pipes to avoid triggering table mode
   ;; it does this with hacky regexs which we'll keep doing for now
   (regexp-replaces
-    text
+    (apply string-append text)
     `([#rx"<@([^|>]*)(\\|([^>]*))?>"
        ,(λ (input user-id _ user-name)
           (define the-name (or user-name (get-user-name user-id)))
@@ -101,7 +101,7 @@
       [#rx"\\|" "\\\\|"])))
 
 (define (markdownify . elems)
-  (parse-markdown (slackify (apply string-append elems))))
+  (parse-markdown (apply slackify elems)))
 
 (define (format-time ts)
   (define the-date
