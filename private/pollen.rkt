@@ -51,7 +51,10 @@
     [else (format "~a~a" (make-indent indent) (->string subtree))]))
 
 (define (channel-json->pollen-text channel)
-  (cons "#lang pollen" (map message-json->pollen-text channel)))
+  `("#lang pollen"
+    "◊div[#:class \"messages\"]{"
+    ,@(map message-json->pollen-text channel)
+    "}"))
 
 (define (message-json->pollen-text message)
   (format "◊~a[~a]{~a}"
