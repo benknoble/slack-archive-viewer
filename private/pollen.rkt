@@ -2,6 +2,7 @@
 
 (provide static-for-pollen
          channel-json->pollen-text
+         pagetree->string
          ->pollen)
 
 (require racket/string
