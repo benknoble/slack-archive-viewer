@@ -2,6 +2,7 @@
 
 (require syntax/parse/define
          txexpr
+         pollen/core
          pollen/tag
          pollen/file
          (only-in markdown parse-markdown)
@@ -186,6 +187,15 @@
                     (txexpr* 'em empty "Bot messages not yet supported"))))
 
 (define messages (default-tag-function 'div #:class "messages"))
+
+(define (page-content . elems)
+  (define title (select-from-metas 'title (current-metas)))
+  (txexpr* 'div '((class "post"))
+           (when/splice title
+             (txexpr* 'header '((class "post-header"))
+                      (txexpr* 'h1 '((class "post-title")) title)))
+           (txexpr 'article '((class "post-content"))
+                   elems)))
 
 (define (link url #:class [class-name #f] . tx-elements)
   (let* ([tx-elements (if (null? tx-elements)

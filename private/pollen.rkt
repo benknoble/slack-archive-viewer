@@ -52,9 +52,8 @@
 
 (define (channel-json->pollen-text channel)
   `("#lang pollen"
-    "◊messages{"
-    ,@(map message-json->pollen-text channel)
-    "}"))
+    "◊page-content{"
+    "  ◊messages{" ,@(map message-json->pollen-text channel) "}}"))
 
 (define (message-json->pollen-text message)
   (format "◊~a[~a]{~a}"
