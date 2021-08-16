@@ -113,11 +113,14 @@
       [else (raise-argument-error 'ts "timestamp-ish or date?" ts)]))
   (define (make-two-digit n)
     (format "~a~a" (if (n . < . 10) "0" "") n))
+  (define years (date-year the-date))
+  (define months (date-month the-date))
+  (define days (date-day the-date))
   (define hours (make-two-digit (date-hour the-date)))
   (define minutes (make-two-digit (date-minute the-date)))
   (define seconds (make-two-digit (date-second the-date)))
   ;; don't need AM/PM: use a 24h display
-  (format "~a:~a:~a" hours minutes seconds))
+  (format "~a-~a-~a ~a:~a:~a" years months days hours minutes seconds))
 
 (define-tag-function (message attrs elems)
   (define user-id (attr-ref attrs 'user))
