@@ -31,6 +31,24 @@
                                  "index.html.pm"
                                  )))
 
+(define (make-indent indent)
+  (build-string indent (const #\space)))
+
+;; pagetree? -> string?
+(define (page-tree->string tree [indent 0])
+  (string-join
+    (map (curryr page-tree-node->string indent) tree)
+    "\n"))
+
+(define (page-tree-node->string node [indent 0])
+  (cond
+    [(list? node)
+     (format "~a◊~a{~n~a}"
+             (make-indent indent)
+             (first node)
+             (page-tree->string (rest node) (+ indent 2)))]
+    [else (format "~a~a" (make-indent indent) (->string node))]))
+
 (define (channel-json->pollen-text channel)
   (cons "#lang pollen" (map message-json->pollen-text channel)))
 
@@ -66,32 +84,15 @@
   ;}}}
 
   step "Generate pagetree" ;{{{
-  ;; TODO extract
-  (define remove-one-dir
-    (compose1 (curry apply build-path) rest explode-path))
-  (define (path->ptree-output n)
-    (->symbol (remove-one-dir (path-replace-extension n ".html"))))
   (define page-tree
     ;; validated when pollen renders
     `(index.html
        (channels
-         ,@(for/list ([channel-path the-channel-paths])
-             `(,(path->ptree-output channel-path)
-                ,@(for/list ([channel-file-path (directory-list #:build? #t channel-path)])
-                    (path->ptree-output channel-file-path)))))))
-  (define (page-tree->string tree [indent 0])
-    (define indent-str (build-string indent (const #\space)))
-    (string-join
-      (map (λ (node)
-             (cond
-               [(list? node)
-                (format "~a◊~a{~n~a}"
-                        indent-str
-                        (first node)
-                        (page-tree->string (rest node) (+ indent 2)))]
-               [else (format "~a~a" indent-str (->string node))]))
-           tree)
-      "\n"))
+         ,@(map (λ (channel-path)
+                  (cons (path->ptree-output channel-path)
+                        (map path->ptree-output
+                             (directory-list #:build? #t channel-path))))
+                the-channel-paths))))
   (define pagetree-content
     (string-append "#lang pollen\n" (page-tree->string page-tree)))
   (define pagetree-file (build-path "pollen" "index.ptree"))
@@ -136,5 +137,10 @@
          (pagetree . ,pagetree-file)
          (metas . ,output-meta-files)
          (statics . ,output-static-files)))
+
+(define (path->ptree-output n [ext ".html"])
+  ;; assumes the top directory is the data-dir
+  ;; see ->pollen parameters
+  (->symbol (remove-one-dir (path-replace-extension n ext))))
 
 ;; vim: lw+=define-steps

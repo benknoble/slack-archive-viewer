@@ -2,7 +2,8 @@
 
 (provide copy-directory/files*
          async-edit
-         mkdir!)
+         mkdir!
+         remove-one-dir)
 
 ;; from https://github.com/racket/racket/blob/master/racket/collects/racket/file.rkt
 ;; with copy-file's exists-ok? (and a hack for directories)
@@ -55,3 +56,6 @@
      (delete-directory/files dir)
      (make-directory dir)]
     [else (make-directory dir)]))
+
+(define remove-one-dir
+  (compose1 (curry apply build-path) rest explode-path))
