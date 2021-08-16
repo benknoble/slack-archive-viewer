@@ -13,6 +13,9 @@ install:
 	# default with no package provided is current directory as link
 	raco pkg install --deps search-auto
 
+install-nodocs:
+	raco pkg install --deps search-auto --no-docs
+
 remove:
 	raco pkg remove $(PACKAGE)
 
