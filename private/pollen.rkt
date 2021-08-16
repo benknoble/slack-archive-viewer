@@ -71,7 +71,7 @@
                  the-channel-paths))
   ;}}}
 
-  step "Convert channel files to pollen" ;{{{
+  step "Convert message files to pollen" ;{{{
   (define channel-file->pollen (compose1 channel-json->pollen-text file->json))
   (define channel-files (all-channel-files data-dir))
   (define output-channel-files
@@ -85,6 +85,18 @@
               [output-file output-channel-files])
     (define pollen-text (channel-file->pollen channel-file))
     (display-lines-to-file pollen-text output-file))
+  ;}}}
+
+  step "Generate channel overview files" ;{{{
+  (define output-overview-files
+    (map (compose1 ->path path->pagetree-output) the-channel-paths))
+  (define (make-overview-content channel-path)
+    (list "#lang pollen"
+          ;; let the template & pagetree do all the work :)
+          "◊(define-meta template-for \"channel-overview.html.p\")"))
+  (for/async ([channel the-channel-paths]
+              [output-overview-file output-overview-files])
+    (display-lines-to-file (make-overview-content channel) output-overview-file))
   ;}}}
 
   step "Generate pagetree" ;{{{
@@ -137,7 +149,8 @@
     (copy-directory/files* static-file-or-dir output-static-file))
   ;}}}
 
-  `#hash((channels . ,output-channel-files)
+  `#hash((messages . ,output-channel-files)
+         (overviews . ,output-overview-files)
          (pagetree . ,pagetree-file)
          (metas . ,output-meta-files)
          (statics . ,output-static-files)))

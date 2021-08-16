@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+
+◊(require sugar
+          racket/path)
+◊(define-meta title
+  (->string (path-replace-extension (file-name-from-path here) "")))
+
 ◊; TODO: extract common stuff into pollen.rkt or similar…
 ◊; Right now, trying to modify the HTML requires identical edits in multiple
 ◊; places. That's no good.
@@ -49,7 +55,24 @@
     </header>
     <div class='page-content'>
       <div class='wrapper'>
-        ◊(->html doc)
+        <div class='post'>
+          <header class='post-header'>
+            <h1 class='post-title'>(select-from-metas 'title metas)</h1>
+          </header>
+          <article class='post-content'>
+            <p>◊(get-channel-purpose (select-from-metas 'title metas))</p>
+            ◊(define date-pages
+              (children (->symbol (format "~a.html" (select-from-metas 'title metas)))))
+            ◊ol[#:class "channel-overview"]{
+              ◊(map (λ (date-page)
+                      ◊li{◊(link (format "~a/~a" (select-from-metas 'title metas) date-page)
+                                 (-> string (path-replace-extension date-page "")))})
+                    date-pages)
+            }
+            ◊; debugging: `doc` should be empty
+            ◊(->html doc)
+          </article>
+        </div>
       </div>
     </div>
     <footer class="site-footer">
