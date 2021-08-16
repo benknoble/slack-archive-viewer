@@ -95,21 +95,10 @@
   (define (make-overview-content channel-path)
     (define title (->string (path-replace-extension (file-name-from-path channel-path) "")))
     (list "#lang pollen"
-
-          (format "◊(define title ~v)" title)
-          "◊(define-meta title title)"
-
+          (format "◊(define-meta title ~v)" title)
           "◊page-content{"
-          "  ◊purpose{◊(get-channel-purpose title)}"
-
-          "  ◊(define date-pages"
-          "    (children (->symbol (format \"~a.html\" title))))"
-
-          "  ◊ol[#:class \"channel-overview\"]{"
-          "    ◊(map (λ (date-page)"
-          "            ◊li{◊(link (format \"~a/~a\" title date-page)"
-          "                       (-> string date-page))})"
-          "          date-pages)}}"))
+          "  ◊(purpose)"
+          "  ◊(make-channel-overview)}"))
   (for/async ([channel the-channel-paths]
               [output-overview-file output-overview-files])
     (display-lines-to-file (make-overview-content channel) output-overview-file))

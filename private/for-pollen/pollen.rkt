@@ -5,6 +5,7 @@
          pollen/core
          pollen/tag
          pollen/file
+         pollen/pagetree
          (only-in markdown parse-markdown)
          sugar
          net/url-string
@@ -188,7 +189,6 @@
                     (txexpr* 'em empty "Bot messages not yet supported"))))
 
 (define messages (default-tag-function 'div #:class "messages"))
-(define purpose (default-tag-function 'p))
 
 (define (page-content . elems)
   (define title (select-from-metas 'title (current-metas)))
@@ -218,4 +218,23 @@
                   (format "~a/~a" (config 'base-url "/") sans-index)
                   "/"))
 
-;; vim: lw+=define-tag-function,define-dynamic-definer,define/caching
+(define (purpose)
+  (define title (select-from-metas 'title (current-metas)))
+  (when/splice title
+    (txexpr* 'p empty
+             (get-channel-purpose title))))
+
+(define (make-channel-overview)
+  (define title (select-from-metas 'title (current-metas)))
+  (define date-pages
+    (children (->symbol (format "~a.html" title))
+              (get-pagetree "index.ptree")))
+  (when/splice title
+    (txexpr* 'ol '((class "channel-overview"))
+             (map (λ (date-page)
+                    (txexpr* 'li empty
+                             (link (format "~a/~a" title date-page)
+                                   (->string date-page))))
+                  date-pages))))
+
+;; vim: lw+=define-tag-function,define-dynamic-definer,define/caching,when/splice
