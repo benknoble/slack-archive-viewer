@@ -12,11 +12,12 @@
          racket/function
          racket/runtime-path
          json
+         sugar
          (for-syntax racket/base)
          "json.rkt"
          "files.rkt"
          (only-in "channels.rkt" all-channel-files)
-         (rename-in "channels.rkt" [channels channel-names])
+         (rename-in "channels.rkt" [channels channel-paths])
          "meta.rkt"
          (only-in "../merge-meta.rkt" users channels)
          "steps.rkt")
@@ -42,9 +43,10 @@
 (define-steps (->pollen data-dir)
   step "Make pollen directory tree" ;{{{
   (mkdir! "pollen")
+  (define the-channel-paths (channel-paths data-dir))
   (for-each mkdir!
             (map (compose1 (curry build-path "pollen") file-name-from-path)
-                 (channel-names data-dir)))
+                 the-channel-paths))
   ;}}}
 
   step "Convert channel files to pollen" ;{{{
@@ -61,6 +63,39 @@
               [output-file output-channel-files])
     (define pollen-text (channel-file->pollen channel-file))
     (display-lines-to-file pollen-text output-file))
+  ;}}}
+
+  step "Generate pagetree" ;{{{
+  ;; TODO extract
+  (define remove-one-dir
+    (compose1 (curry apply build-path) rest explode-path))
+  (define (path->ptree-output n)
+    (->symbol (remove-one-dir (path-replace-extension n ".html"))))
+  (define page-tree
+    ;; validated when pollen renders
+    `(index.html
+       (channels
+         ,@(for/list ([channel-path the-channel-paths])
+             `(,(path->ptree-output channel-path)
+                ,@(for/list ([channel-file-path (directory-list #:build? #t channel-path)])
+                    (path->ptree-output channel-file-path)))))))
+  (define (page-tree->string tree [indent 0])
+    (define indent-str (build-string indent (const #\space)))
+    (string-join
+      (map (λ (node)
+             (cond
+               [(list? node)
+                (format "~a◊~a{~n~a}"
+                        indent-str
+                        (first node)
+                        (page-tree->string (rest node) (+ indent 2)))]
+               [else (format "~a~a" indent-str (->string node))]))
+           tree)
+      "\n"))
+  (define pagetree-content
+    (string-append "#lang pollen\n" (page-tree->string page-tree)))
+  (define pagetree-file (build-path "pollen" "index.ptree"))
+  (display-to-file pagetree-content pagetree-file)
   ;}}}
 
   step "Convert metadata to jsond" ;{{{
@@ -98,6 +133,7 @@
   ;}}}
 
   `#hash((channels . ,output-channel-files)
+         (pagetree . ,pagetree-file)
          (metas . ,output-meta-files)
          (statics . ,output-static-files)))
 
