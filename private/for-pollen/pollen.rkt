@@ -67,7 +67,7 @@
     (hash-ref channel 'name)))
 
 (define/caching (get-channel-purpose channel-name)
-  (let ([channel-id (->symbol channel-name)])
+  (let ([channel-name (->symbol channel-name)])
     (define channel (hash-ref (channels-data 'reverse) channel-name))
     (define purpose (hash-ref channel 'purpose))
     (hash-ref purpose 'value)))
