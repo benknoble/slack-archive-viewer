@@ -35,18 +35,18 @@
   (build-string indent (const #\space)))
 
 ;; pagetree? -> string?
-(define (page-tree->string tree [indent 0])
+(define (pagetree->string tree [indent 0])
   (string-join
-    (map (curryr page-tree-node->string indent) tree)
+    (map (curryr pagetree-node->string indent) tree)
     "\n"))
 
-(define (page-tree-node->string node [indent 0])
+(define (pagetree-node->string node [indent 0])
   (cond
     [(list? node)
      (format "~a◊~a{~n~a}"
              (make-indent indent)
              (first node)
-             (page-tree->string (rest node) (+ indent 2)))]
+             (pagetree->string (rest node) (+ indent 2)))]
     [else (format "~a~a" (make-indent indent) (->string node))]))
 
 (define (channel-json->pollen-text channel)
@@ -84,17 +84,17 @@
   ;}}}
 
   step "Generate pagetree" ;{{{
-  (define page-tree
+  (define pagetree
     ;; validated when pollen renders
     `(index.html
        (channels
          ,@(map (λ (channel-path)
-                  (cons (path->ptree-output channel-path)
-                        (map path->ptree-output
+                  (cons (path->pagetree-output channel-path)
+                        (map path->pagetree-output
                              (directory-list #:build? #t channel-path))))
                 the-channel-paths))))
   (define pagetree-content
-    (string-append "#lang pollen\n" (page-tree->string page-tree)))
+    (string-append "#lang pollen\n" (pagetree->string pagetree)))
   (define pagetree-file (build-path "pollen" "index.ptree"))
   (display-to-file pagetree-content pagetree-file)
   ;}}}
@@ -138,7 +138,7 @@
          (metas . ,output-meta-files)
          (statics . ,output-static-files)))
 
-(define (path->ptree-output n [ext ".html"])
+(define (path->pagetree-output n [ext ".html"])
   ;; assumes the top directory is the data-dir
   ;; see ->pollen parameters
   (->symbol (remove-one-dir (path-replace-extension n ext))))
