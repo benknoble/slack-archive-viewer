@@ -88,11 +88,28 @@
 
   step "Generate channel overview files" ;{{{
   (define output-overview-files
-    (map (compose1 ->path path->pagetree-output) the-channel-paths))
+    (map (compose1 (curry build-path "pollen")
+                   ->path
+                   (curryr path->pagetree-output ".html.pm"))
+         the-channel-paths))
   (define (make-overview-content channel-path)
+    (define title (->string (path-replace-extension (file-name-from-path channel-path) "")))
     (list "#lang pollen"
-          ;; let the template & pagetree do all the work :)
-          "◊(define-meta template-for \"channel-overview.html.p\")"))
+
+          (format "◊(define title ~v)" title)
+          "◊(define-meta title title)"
+
+          "◊page-content{"
+          "  ◊purpose{◊(get-channel-purpose title)}"
+
+          "  ◊(define date-pages"
+          "    (children (->symbol (format \"~a.html\" title))))"
+
+          "  ◊ol[#:class \"channel-overview\"]{"
+          "    ◊(map (λ (date-page)"
+          "            ◊li{◊(link (format \"~a/~a\" title date-page)"
+          "                       (-> string date-page))})"
+          "          date-pages)}}"))
   (for/async ([channel the-channel-paths]
               [output-overview-file output-overview-files])
     (display-lines-to-file (make-overview-content channel) output-overview-file))

@@ -15,6 +15,7 @@
          slack-archive-viewer/private/config)
 
 (provide (all-defined-out)
+         (all-from-out sugar)
          config)
 
 (define (attrs-update attrs key value)
@@ -187,6 +188,7 @@
                     (txexpr* 'em empty "Bot messages not yet supported"))))
 
 (define messages (default-tag-function 'div #:class "messages"))
+(define purpose (default-tag-function 'p))
 
 (define (page-content . elems)
   (define title (select-from-metas 'title (current-metas)))

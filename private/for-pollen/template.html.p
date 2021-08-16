@@ -1,7 +1,4 @@
 <!DOCTYPE html>
-◊; TODO: extract common stuff into pollen.rkt or similar…
-◊; Right now, trying to modify the HTML requires identical edits in multiple
-◊; places. That's no good.
 <html>
   <head>
     <meta charset="utf-8">
