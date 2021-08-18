@@ -4,7 +4,8 @@
          channel-json->pollen-text
          pagetree->string
          ->pollen
-         render)
+         render
+         publish)
 
 (require racket/string
          racket/future
@@ -177,5 +178,8 @@
   ;; instead.
   (parameterize ([current-directory src-dir])
     (system "raco pollen render -ps index.ptree")))
+
+(define (publish [src-dir "pollen"] [out-dir "_site"])
+  (system (format "raco pollen publish ~a ~a" src-dir out-dir)))
 
 ;; vim: lw+=define-steps
