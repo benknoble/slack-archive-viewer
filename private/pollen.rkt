@@ -13,7 +13,7 @@
          racket/path
          racket/function
          racket/runtime-path
-         raco/all-tools
+         racket/system
          json
          sugar
          (for-syntax racket/base)
@@ -168,13 +168,14 @@
   (->symbol (remove-one-dir (path-replace-extension n ext))))
 
 (define (render [src-dir "pollen"])
-  ;; I'm following
+  ;; I wanted to use
   ;; https://docs.racket-lang.org/raco/command.html#%28mod-path._raco%2Fall-tools%29
   ;; instead of using (system "raco pollen …")---I expect this to be slightly
   ;; faster as it avoids the overhead of separate processes/etc.
-  (define raco-pollen-spec (hash-ref (all-tools) "pollen"))
-  (parameterize ([current-directory src-dir]
-                 [current-command-line-arguments #("render" "-p" "index.ptree")])
-    (dynamic-require (second raco-pollen-spec) #f)))
+  ;; BUT in order to use pollen in parallel mode, pollen takes heavy advantage
+  ;; of places, which DO NOT inherit parameters. So we fall back to system
+  ;; instead.
+  (parameterize ([current-directory src-dir])
+    (system "raco pollen render -ps index.ptree")))
 
 ;; vim: lw+=define-steps
