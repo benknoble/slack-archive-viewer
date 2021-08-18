@@ -14,6 +14,7 @@
                              "_layouts"
                              "_data"
                              "_includes"
+                             "_site"
                              "sample-data"
                              "privacy-list-demo.rkt"
                              "pollen"))
