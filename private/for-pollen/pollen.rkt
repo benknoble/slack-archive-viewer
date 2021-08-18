@@ -238,4 +238,11 @@
                                   (->string date-page))))
                  date-pages))))
 
+(module setup racket/base
+  (provide (all-defined-out))
+  (define (omitted-path? p)
+    (or (regexp-match? #rx"\\.scss$" (path->string p))
+        (and (directory-exists? p)
+             (andmap omitted-path? (directory-list p #:build? #t))))))
+
 ;; vim: lw+=define-tag-function,define-dynamic-definer,define/caching,when/splice
