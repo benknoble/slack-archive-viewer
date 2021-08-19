@@ -13,7 +13,7 @@
          net/url-string
          ;; must not be relative path because this file is used in a separate
          ;; pollen program
-         slack-archive-viewer/private/config)
+         (only-in slack-archive-viewer/private/config define-dynamic-definer))
 
 (provide (all-defined-out)
          (all-from-out sugar)
@@ -45,6 +45,7 @@
 (define-runtime-path index-tree "index.ptree")
 (define-runtime-path -project-root (build-path 'same))
 (define project-root (simplify-path -project-root))
+(define-dynamic-definer config (build-path project-root "slack-config.rkt"))
 
 (define-values (users-meta users-reverse channels-meta channels-reverse)
   (values (dynamic-require users-data 'meta)
