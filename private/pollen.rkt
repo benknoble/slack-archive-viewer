@@ -207,7 +207,10 @@
   ;; instead.
   (define did-render
     (parameterize ([current-directory src-dir])
-      (and (system "raco make template.html.rkt")
+      (and (if (file-exists? "slack-config.rkt")
+             (system "raco make slack-config.rkt")
+             #t)
+           (system "raco make template.html.rkt")
            (system "raco pollen render -ps index.ptree"))))
   (unless did-render
     (raise-user-error 'render "raco pollen render failed")))
