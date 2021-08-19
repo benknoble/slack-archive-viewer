@@ -17,7 +17,7 @@
 
       <div class="wrapper">
 
-        ◊(->html (link (make-url "index.html") #:class "site-title" site-title))
+        <a href='◊(make-url "index.html")' class='site-title'>◊|site-title|</a>
 
         <nav class="site-nav">
           <a href="#" class="menu-icon">
@@ -51,7 +51,7 @@
           <div class="footer-col  footer-col-1">
             <ul class="contact-list">
               <li>◊|site-title|</li>
-              <li>◊(->html (link (format "mailto:~a" email) email))</li>
+              <li><a href='◊(format "mailto:~a" email)'>◊|email|</a></li>
             </ul>
           </div>
 
