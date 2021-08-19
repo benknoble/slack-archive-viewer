@@ -48,7 +48,10 @@
            "private/config.rkt"
            "private/files.rkt")
   (define default-out-dir
-    (or (remove-one-dir (config 'base-url)) "_site"))
+    (let ([base-url (config 'base-url)])
+      (cond
+        [base-url (remove-one-dir base-url)]
+        [else "_site"])))
   (command-line
     #:args (archives-dir [out-dir default-out-dir])
     (run-main archives-dir out-dir)))
