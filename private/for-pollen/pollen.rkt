@@ -94,15 +94,13 @@
        ,(λ (input user-id _ user-name)
           (define the-name (or user-name (get-user-name user-id)))
           (xexpr->html
-            (txexpr* 'strong null
-                     "@" the-name)))]
+            `(strong "@" ,the-name)))]
       [#rx"<#([^|>]*)(\\|([^>]*))?>"
        ,(λ (input channel-id _ channel-name)
           (define the-name (or channel-name (get-channel-name channel-id)))
           (xexpr->html
-            (txexpr* 'strong null
-                     (link (make-url (format "~a.html" the-name))
-                           "#" the-name))))]
+            `(strong ,(link (make-url (format "~a.html" the-name))
+                            "#" the-name))))]
       [,(regexp (format "<(~v)\\|([^[:space:]]+)>" (object-name url-regexp)))
        ,(λ (input url link-text)
           (xexpr->html (link url link-text)))]
@@ -140,17 +138,14 @@
   (define user-name (get-user-name user-id))
   (define image-link (get-image-link user-id))
   (define time (format-time (attr-ref attrs 'ts)))
-  (txexpr* '@ ;; splice
-           empty
-           (txexpr* 'div
-                    empty
-                    (txexpr 'img `((src ,image-link)))
-                    (txexpr* 'div
-                             '((class "message"))
-                             (txexpr* 'div '((class "username")) user-name)
-                             (txexpr* 'div '((class "time")) time)
-                             (txexpr 'div '((class "msg")) (apply markdownify elems))))
-           '(br)))
+  `(@ ;; splice
+     (div
+       (img ((src ,image-link)))
+       (div ((class "message"))
+            (div ((class "username")) ,user-name)
+            (div ((class "time")) ,time)
+            (div ((class "msg")) ,@(apply markdownify elems))))
+     (br)))
 
 (define-syntax-parse-rule (default-message-function name:id)
   (define-tag-function (name attrs elems)
@@ -170,21 +165,18 @@
   (define file-url (hash-ref the-file 'permalink_public "#"))
   (define file-title (hash-ref the-file 'title ""))
   (define file-comment (hash-ref (hash-ref the-file 'initial_comment #hash()) 'comment #f))
-  (txexpr* '@ ;; splice
-           empty
-           (txexpr* 'div
-                    empty
-                    (txexpr 'img `((src ,image-link)))
-                    (txexpr* 'div
-                             '((class "message"))
-                             (txexpr* 'div '((class "username")) user-name)
-                             (txexpr* 'div '((class "time")) time)
-                             (txexpr* 'div '((class "msg"))
-                                      "Uploaded file: " (link file-url file-title))
-                             (if file-comment
-                               (txexpr* 'div '((class "msg")) "Comment: " file-comment)
-                               "")))
-           '(br)))
+  `(@ ;; splice
+     (div
+       (img ((src ,image-link)))
+       (div ((class "message"))
+            (div ((class "username")) ,user-name)
+            (div ((class "time")) ,time)
+            (div ((class "msg"))
+                 "Uploaded file: " ,(link file-url file-title))
+            ,(if file-comment
+               `(div ((class "msg")) "Comment: " ,file-comment)
+               "")))
+     (br)))
 
 (define-tag-function (file_comment attrs elems)
   (define user-id (hash-ref (attr-ref attrs 'comment) 'user))
@@ -192,32 +184,27 @@
   (apply-tag-function message (attrs-update attrs 'user user-id) elems))
 
 (define-tag-function (bot_message attrs elems)
-  (txexpr* 'div
-           '((class "message"))
-           (txexpr* 'div
-                    '((class "msg"))
-                    (txexpr* 'em empty "Bot messages not yet supported"))))
+  `(div ((class "message"))
+        (div ((class "msg"))
+             (em "Bot messages not yet supported"))))
 
 (define messages (default-tag-function 'div #:class "messages"))
 
 (define (page-content . elems)
   (define title (select-from-metas 'title (current-metas)))
-  (txexpr* 'div '((class "post"))
-           (when/splice title
-             (txexpr* 'header '((class "post-header"))
-                      (txexpr* 'h1 '((class "post-title")) title)))
-           (txexpr 'article '((class "post-content"))
-                   elems)))
+  `(div ((class "post"))
+        ,(when/splice title
+           `(header ((class "post-header"))
+                    (h1 ((class "post-title")) ,title)))
+        (article ((class "post-content"))
+                 ,@elems)))
 
 (define (link url #:class [class-name #f] . tx-elements)
-  (let* ([tx-elements (if (null? tx-elements)
-                        (list url)
-                        tx-elements)]
-         [link-tx (txexpr 'a empty tx-elements)]
-         [link-tx (attr-set link-tx 'href url)])
-    (if class-name
-      (attr-set link-tx 'class class-name)
-      link-tx)))
+  (let ([tx-elements (if (null? tx-elements) (list url) tx-elements)]
+        [class-attr (if class-name `((class ,class-name)) empty)])
+    `(a ((href ,url)
+         ,@class-attr)
+        ,@tx-elements)))
 
 (define (make-url path)
   (define source-path (->string path))
@@ -229,8 +216,7 @@
 (define (purpose)
   (define title (select-from-metas 'title (current-metas)))
   (when/splice title
-    (txexpr* 'p empty
-             (get-channel-purpose title))))
+    `(p ,(get-channel-purpose title))))
 
 (define (make-channel-overview)
   (define title (select-from-metas 'title (current-metas)))
@@ -238,12 +224,11 @@
     (children (->symbol (format "~a.html" title))
               (get-pagetree index-tree)))
   (when/splice title
-    (txexpr 'ol '((class "channel-overview"))
-            (map (λ (date-page)
-                   (txexpr* 'li empty
-                            (link (make-url date-page)
-                                  (->string date-page))))
-                 date-pages))))
+    `(ol ((class "channel-overview"))
+         ,@(map (λ (date-page)
+                  `(li ,(link (make-url date-page)
+                              (->string date-page))))
+                date-pages))))
 
 (module setup racket/base
   (provide (all-defined-out))
