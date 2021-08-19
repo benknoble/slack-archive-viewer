@@ -8,7 +8,6 @@
          pollen/tag
          pollen/file
          pollen/pagetree
-         pollen/setup
          (only-in markdown parse-markdown)
          sugar
          net/url-string
@@ -44,6 +43,8 @@
                       (values "users.rkt" "channels.rkt"))
 
 (define-runtime-path index-tree "index.ptree")
+(define-runtime-path -project-root (build-path 'same))
+(define project-root (simplify-path -project-root))
 
 (define-values (users-meta users-reverse channels-meta channels-reverse)
   (values (dynamic-require users-data 'meta)
@@ -216,14 +217,12 @@
       (attr-set link-tx 'class class-name)
       link-tx)))
 
-(define (make-absolute-url path)
+(define (make-url path)
   (define source-path (->string path))
   (define output-path (->string (->output-path source-path)))
-  (define rel-path (regexp-replace (format "^~a" (regexp-quote (->string (current-project-root)))) output-path ""))
+  (define rel-path (regexp-replace (format "^~a" (regexp-quote (->string project-root))) output-path ""))
   (define sans-index (regexp-replace #rx"index\\.html$" rel-path ""))
-  (regexp-replace #rx"^//"
-                  (format "~a/~a" (config 'base-url "/") sans-index)
-                  "/"))
+  (format "~a~a" (config 'base-url "/") sans-index))
 
 (define (purpose)
   (define title (select-from-metas 'title (current-metas)))
