@@ -42,3 +42,6 @@ try-fix-deps:
 # Suitable for both day-to-day dev and CI
 test:
 	raco test -x -p $(PACKAGE)
+
+example:
+	time racket main.rkt sample-data

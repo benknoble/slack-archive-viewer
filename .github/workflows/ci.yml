@@ -22,3 +22,5 @@ jobs:
         run: make check-deps
       - name: Testing
         run: make test
+      - name: Running the example
+        run: make example
