@@ -157,11 +157,19 @@
     (copy-directory/files* static-file-or-dir output-static-file))
   ;}}}
 
+  step "Copy slack-config.rkt, if present" ;{{{
+  (define config-file (and (file-exists? "slack-config.rkt")
+                           "slack-config.rkt"))
+  (when config-file
+    (copy-file config-file (build-path "pollen" config-file)))
+  ;}}}
+
   `#hash((messages . ,output-channel-files)
          (overviews . ,output-overview-files)
          (pagetree . ,pagetree-file)
          (metas . ,output-meta-files)
-         (statics . ,output-static-files)))
+         (statics . ,output-static-files)
+         (config . ,config-file)))
 
 (define (path->pagetree-output n [ext ".html"])
   ;; assumes the top directory is the data-dir
