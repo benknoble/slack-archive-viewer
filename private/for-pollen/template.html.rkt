@@ -29,17 +29,7 @@
           </a>
 
           <div class="trigger">
-            ◊(define channels
-              (or (children 'channels (get-pagetree index-tree))
-                  '()))
-            ◊(->html
-              (for/list ([channel channels])
-                (define channel-metas (get-metas channel))
-                (define title (select-from-metas 'title channel-metas))
-                (when/splice title
-                  (link (make-url (select-from-metas 'here-path channel-metas))
-                        #:class "page-link"
-                        title))))
+            ◊(->html nav)
           </div>
         </nav>
 

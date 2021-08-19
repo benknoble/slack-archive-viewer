@@ -13,10 +13,12 @@
          net/url-string
          ;; must not be relative path because this file is used in a separate
          ;; pollen program
-         (only-in slack-archive-viewer/private/config define-dynamic-definer))
+         (only-in slack-archive-viewer/private/config define-dynamic-definer)
+         "nav.rkt")
 
 (provide (all-defined-out)
          (all-from-out sugar)
+         (all-from-out "nav.rkt")
          config)
 
 (define (attrs-update attrs key value)

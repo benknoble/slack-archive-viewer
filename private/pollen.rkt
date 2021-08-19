@@ -15,6 +15,7 @@
          racket/function
          racket/runtime-path
          racket/system
+         pollen/pagetree
          json
          sugar
          (for-syntax racket/base)
@@ -24,7 +25,8 @@
          (rename-in "channels.rkt" [channels channel-paths])
          "meta.rkt"
          (only-in "../merge-meta.rkt" users channels)
-         "steps.rkt")
+         "steps.rkt"
+         "config.rkt")
 
 (define-runtime-path-list static-for-pollen
                           (map (λ (p) (build-path "for-pollen" p))
@@ -123,6 +125,24 @@
   (display-to-file pagetree-content pagetree-file)
   ;}}}
 
+  step "Generate nav" ;{{{
+  (define nav-file (build-path "pollen" "nav.rkt"))
+  (define nav
+    (let ([channels (children 'channels pagetree)])
+      (map (λ (c)
+             `(a ((href ,(format "~a~a" (config 'base-url "/") (->string c)))
+                  (class "page-link"))
+                 ,(->string (path-replace-extension (file-name-from-path (->path c)) ""))))
+           channels)))
+  (define nav-content
+    `("#lang racket/base"
+      "(provide nav)"
+      "(define nav"
+      ,(format "~v" nav)
+      ")"))
+  (display-lines-to-file nav-content nav-file)
+  ;}}}
+
   step "Convert metadata to jsond" ;{{{
   (define meta-files (list ((meta-info-make-path channels) data-dir)
                            ((meta-info-make-path users) data-dir)))
@@ -169,6 +189,7 @@
          (pagetree . ,pagetree-file)
          (metas . ,output-meta-files)
          (statics . ,output-static-files)
+         (nav . ,nav-file)
          (config . ,config-file)))
 
 (define (path->pagetree-output n [ext ".html"])
