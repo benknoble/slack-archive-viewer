@@ -14,7 +14,9 @@
          ;; must not be relative path because this file is used in a separate
          ;; pollen program
          (only-in slack-archive-viewer/private/config define-dynamic-definer)
-         "nav.rkt")
+         "nav.rkt"
+         (prefix-in users: "users.rkt")
+         (prefix-in channels: "channels.rkt"))
 
 (provide (all-defined-out)
          (all-from-out sugar)
@@ -41,26 +43,17 @@
 
   (apply f attrs elems))
 
-(define-runtime-paths (users-data channels-data)
-                      (values "users.rkt" "channels.rkt"))
-
 (define-runtime-path index-tree "index.ptree")
 (define-runtime-path -project-root (build-path 'same))
 (define project-root (simplify-path -project-root))
 (define-dynamic-definer config (build-path project-root "slack-config.rkt"))
-
-(define-values (users-meta users-reverse channels-meta channels-reverse)
-  (values (dynamic-require users-data 'meta)
-          (dynamic-require users-data 'reverse)
-          (dynamic-require channels-data 'meta)
-          (dynamic-require channels-data 'reverse)))
 
 (define/caching (get-user-name user-id)
   (let ([user-id (->symbol user-id)])
     (case user-id
       ['(USLACKBOT) "SlackBot"]
       [else
-        (define user (hash-ref users-meta user-id))
+        (define user (hash-ref users:meta user-id))
         (hash-ref user 'name)])))
 
 (define/caching (get-image-link user-id)
@@ -68,18 +61,18 @@
     (case user-id
       ['(USLACKBOT) "https://slack.global.ssl.fastly.net/66f9/img/slackbot_32.png"]
       [else
-        (define user (hash-ref users-meta user-id))
+        (define user (hash-ref users:meta user-id))
         (define profile (hash-ref user 'profile))
         (hash-ref profile 'image_32)])))
 
 (define/caching (get-channel-name channel-id)
   (let ([channel-id (->symbol channel-id)])
-    (define channel (hash-ref channels-meta channel-id))
+    (define channel (hash-ref channels:meta channel-id))
     (hash-ref channel 'name)))
 
 (define/caching (get-channel-purpose channel-name)
   (let ([channel-name (->symbol channel-name)])
-    (define channel (hash-ref channels-reverse channel-name))
+    (define channel (hash-ref channels:reverse channel-name))
     (define purpose (hash-ref channel 'purpose))
     (hash-ref purpose 'value)))
 
