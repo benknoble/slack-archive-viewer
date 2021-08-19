@@ -50,8 +50,8 @@
 (define site-title (config 'title ""))
 (define description (config 'description ""))
 (define email (config 'email ""))
-(define github-username (config 'github-username))
-(define twitter-username (config 'twitter-username))
+(define github-username (config 'github-username ""))
+(define twitter-username (config 'twitter-username ""))
 
 (define/caching (get-user-name user-id)
   (let ([user-id (->symbol user-id)])
