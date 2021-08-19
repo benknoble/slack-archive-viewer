@@ -42,7 +42,7 @@ Todo:
 - [x] Pages deploy
 - [x] Merge subsequent archives chronologically
 - [ ] Threads
-- [ ] Fix triple-backtick markdown
-- [ ] HTML decode
+- [ ] Fix triple-backtick markdown (Slack might be getting rid of newlines around triple-backticks)
+- [ ] HTML decode (Slack HTML encodes < and >, even in code blocks, in the text of messages. This is wrong, but too bad for us?)
 - [ ] Support attachments (related to bot messages)
 - [ ] Support messages from bots (there are several "kinds")
