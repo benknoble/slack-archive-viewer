@@ -176,10 +176,15 @@
   ;; BUT in order to use pollen in parallel mode, pollen takes heavy advantage
   ;; of places, which DO NOT inherit parameters. So we fall back to system
   ;; instead.
-  (parameterize ([current-directory src-dir])
-    (system "raco pollen render -ps index.ptree")))
+  (define did-render
+    (parameterize ([current-directory src-dir])
+      (system "raco pollen render -ps index.ptree")))
+  (unless did-render
+    (raise-user-error 'render "raco pollen render failed")))
 
 (define (publish [src-dir "pollen"] [out-dir "_site"])
-  (system (format "raco pollen publish ~a ~a" src-dir out-dir)))
+  (define did-publish (system (format "raco pollen publish ~a ~a" src-dir out-dir)))
+  (unless did-publish
+    (raise-user-error 'publish "raco pollen publish failed")))
 
 ;; vim: lw+=define-steps
