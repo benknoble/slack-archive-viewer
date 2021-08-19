@@ -29,7 +29,7 @@
 
           <div class="trigger">
             ◊(define channels
-              (or (children 'channels (get-pagetree (build-path (current-project-root) "index.ptree")))
+              (or (children 'channels (get-pagetree index-tree))
                   '()))
             ◊(->html
               (for/list ([channel channels])

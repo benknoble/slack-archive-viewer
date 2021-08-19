@@ -43,6 +43,8 @@
 (define-runtime-paths (users-data channels-data)
                       (values "users.rkt" "channels.rkt"))
 
+(define-runtime-path index-tree "index.ptree")
+
 (define-values (users-meta users-reverse channels-meta channels-reverse)
   (values (dynamic-require users-data 'meta)
           (dynamic-require users-data 'reverse)
@@ -233,7 +235,7 @@
   (define title (select-from-metas 'title (current-metas)))
   (define date-pages
     (children (->symbol (format "~a.html" title))
-              (get-pagetree (build-path (current-project-root) "index.ptree"))))
+              (get-pagetree index-tree)))
   (when/splice title
     (txexpr 'ol '((class "channel-overview"))
             (map (λ (date-page)
