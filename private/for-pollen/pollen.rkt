@@ -156,10 +156,31 @@
   (define-tag-function (name attrs elems)
     (apply-tag-function message attrs elems)))
 
+(default-message-function bot_add)
+(default-message-function bot_disable)
+(default-message-function bot_enable)
+(default-message-function bot_remove)
+(default-message-function channel_archive)
 (default-message-function channel_join)
+(default-message-function channel_leave)
 (default-message-function channel_name)
 (default-message-function channel_purpose)
+(default-message-function channel_topic)
+(default-message-function channel_unarchive)
 (default-message-function thread_broadcast)
+
+(define-tag-function (tombstone attrs elems)
+  ;; do nothing
+  ;; deleted message
+  `(@))
+
+(define-tag-function (pinned_item attrs elems)
+  ;; do nothing
+  ;; pinned message
+  `(@))
+
+(define-tag-function (reply_broadcast attrs elems)
+  (apply-tag-function message attrs '("reply_broadcast messages not yet supported")))
 
 (define-tag-function (file_share attrs elems)
   (define user-id (attr-ref attrs 'user))
@@ -190,6 +211,9 @@
   (define user-id (hash-ref (attr-ref attrs 'comment) 'user))
   ;; just a message with the correct user-id
   (apply-tag-function message (attrs-update attrs 'user user-id) elems))
+
+(define-tag-function (me_message attrs elems)
+  (apply-tag-function message attrs (txexpr 'em empty elems)))
 
 (define-tag-function (bot_message attrs elems)
   (txexpr* 'div
