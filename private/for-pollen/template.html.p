@@ -8,15 +8,15 @@
     <title>◊(or (select-from-metas 'title metas) (config 'title ""))</title>
     <meta name="description" content=◊(config 'description "")>
 
-    <link rel="stylesheet" href='◊(make-absolute-url "css/main.css")'>
-    <link rel="canonical" href='◊(make-absolute-url (select-from-metas 'here-path metas))'>
+    <link rel="stylesheet" href='◊(make-url "css/main.css")'>
+    <link rel="canonical" href='◊(make-url here)'>
   </head>
   <body>
     <header class="site-header">
 
       <div class="wrapper">
 
-        ◊(->html (link (config 'baseurl "/") #:class "site-title" (config 'title "")))
+        ◊(->html (link (make-url "index.html") #:class "site-title" (config 'title "")))
 
         <nav class="site-nav">
           <a href="#" class="menu-icon">
@@ -36,7 +36,7 @@
                 (define channel-metas (get-metas channel))
                 (define title (select-from-metas 'title channel-metas))
                 (when/splice title
-                  (link (make-absolute-url (select-from-metas 'here-path channel-metas))
+                  (link (make-url (select-from-metas 'here-path channel-metas))
                         #:class "page-link"
                         title))))
           </div>

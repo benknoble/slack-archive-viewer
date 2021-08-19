@@ -100,7 +100,8 @@
           (define the-name (or channel-name (get-channel-name channel-id)))
           (xexpr->html
             (txexpr* 'strong null
-                     (link the-name "#" the-name))))]
+                     (link (make-url (format "~a.html" the-name))
+                           "#" the-name))))]
       [,(regexp (format "<(~v)\\|([^[:space:]]+)>" (object-name url-regexp)))
        ,(λ (input url link-text)
           (xexpr->html (link url link-text)))]
@@ -239,7 +240,7 @@
     (txexpr 'ol '((class "channel-overview"))
             (map (λ (date-page)
                    (txexpr* 'li empty
-                            (link (format "~a/~a" title date-page)
+                            (link (make-url (build-path title date-page))
                                   (->string date-page))))
                  date-pages))))
 
