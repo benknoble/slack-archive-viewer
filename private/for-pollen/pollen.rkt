@@ -1,6 +1,8 @@
 #lang racket/base
 
 (require syntax/parse/define
+         (for-syntax racket/base)
+         racket/runtime-path
          txexpr
          pollen/core
          pollen/tag
@@ -12,8 +14,6 @@
          net/url-string
          ;; must not be relative path because this file is used in a separate
          ;; pollen program
-         (only-in slack-archive-viewer/private/meta meta-info-make-path)
-         slack-archive-viewer/merge-meta
          slack-archive-viewer/private/config)
 
 (provide (all-defined-out)
@@ -40,17 +40,21 @@
 
   (apply f attrs elems))
 
-(define-dynamic-definer users-data
-  (path-replace-extension ((meta-info-make-path users) (current-project-root)) ".rkt"))
-(define-dynamic-definer channels-data
-  (path-replace-extension ((meta-info-make-path channels) (current-project-root)) ".rkt"))
+(define-runtime-paths (users-data channels-data)
+                      (values "users.rkt" "channels.rkt"))
+
+(define-values (users-meta users-reverse channels-meta channels-reverse)
+  (values (dynamic-require users-data 'meta)
+          (dynamic-require users-data 'reverse)
+          (dynamic-require channels-data 'meta)
+          (dynamic-require channels-data 'reverse)))
 
 (define/caching (get-user-name user-id)
   (let ([user-id (->symbol user-id)])
     (case user-id
       ['(USLACKBOT) "SlackBot"]
       [else
-        (define user (hash-ref (users-data 'meta) user-id))
+        (define user (hash-ref users-meta user-id))
         (hash-ref user 'name)])))
 
 (define/caching (get-image-link user-id)
@@ -58,18 +62,18 @@
     (case user-id
       ['(USLACKBOT) "https://slack.global.ssl.fastly.net/66f9/img/slackbot_32.png"]
       [else
-        (define user (hash-ref (users-data 'meta) user-id))
+        (define user (hash-ref users-meta user-id))
         (define profile (hash-ref user 'profile))
         (hash-ref profile 'image_32)])))
 
 (define/caching (get-channel-name channel-id)
   (let ([channel-id (->symbol channel-id)])
-    (define channel (hash-ref (channels-data 'meta) channel-id))
+    (define channel (hash-ref channels-meta channel-id))
     (hash-ref channel 'name)))
 
 (define/caching (get-channel-purpose channel-name)
   (let ([channel-name (->symbol channel-name)])
-    (define channel (hash-ref (channels-data 'reverse) channel-name))
+    (define channel (hash-ref channels-reverse channel-name))
     (define purpose (hash-ref channel 'purpose))
     (hash-ref purpose 'value)))
 
