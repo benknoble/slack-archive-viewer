@@ -240,7 +240,7 @@
     (txexpr 'ol '((class "channel-overview"))
             (map (λ (date-page)
                    (txexpr* 'li empty
-                            (link (make-url (build-path title date-page))
+                            (link (make-url date-page)
                                   (->string date-page))))
                  date-pages))))
 
