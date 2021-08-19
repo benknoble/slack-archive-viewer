@@ -20,8 +20,7 @@
 
 (provide (all-defined-out)
          (all-from-out sugar)
-         (all-from-out "nav.rkt")
-         config)
+         (all-from-out "nav.rkt"))
 
 (define (attrs-update attrs key value)
   ;; (list-set attrs (index-of attrs (assq key attrs)) (list key value))
