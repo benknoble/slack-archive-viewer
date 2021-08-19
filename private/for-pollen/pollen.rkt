@@ -47,6 +47,12 @@
 (define-runtime-path -project-root (build-path 'same))
 (define project-root (simplify-path -project-root))
 (define-dynamic-definer config (build-path project-root "slack-config.rkt"))
+(define base-url (config 'base-url "/"))
+(define site-title (config 'title ""))
+(define description (config 'description ""))
+(define email (config 'email ""))
+(define github-username (config 'github-username))
+(define twitter-username (config 'twitter-username))
 
 (define/caching (get-user-name user-id)
   (let ([user-id (->symbol user-id)])
@@ -219,7 +225,7 @@
   (define output-path (->string (->output-path source-path)))
   (define rel-path (regexp-replace (format "^~a" (regexp-quote (->string project-root))) output-path ""))
   (define sans-index (regexp-replace #rx"index\\.html$" rel-path ""))
-  (format "~a~a" (config 'base-url "/") sans-index))
+  (format "~a~a" base-url sans-index))
 
 (define (purpose)
   (define title (select-from-metas 'title (current-metas)))
