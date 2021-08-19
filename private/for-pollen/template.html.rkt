@@ -1,3 +1,4 @@
+#lang beeswax/template
 <!DOCTYPE html>
 <html>
   <head>

@@ -247,6 +247,7 @@
 
 (module setup racket/base
   (provide (all-defined-out))
+  (define external-renderer '(beeswax/for-pollen external-renderer))
   (define (omitted-path? p)
     (or (regexp-match? #rx"\\.scss$" (path->string p))
         (and (directory-exists? p)

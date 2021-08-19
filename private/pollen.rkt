@@ -31,7 +31,7 @@
                                '("css"
                                  "_sass"
                                  "pollen.rkt"
-                                 "template.html.p"
+                                 "template.html.rkt"
                                  "index.html.pm"
                                  )))
 
@@ -186,6 +186,7 @@
   ;; instead.
   (define did-render
     (parameterize ([current-directory src-dir])
+      (system "raco make template.html.rkt")
       (system "raco pollen render -ps index.ptree")))
   (unless did-render
     (raise-user-error 'render "raco pollen render failed")))

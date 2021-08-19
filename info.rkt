@@ -3,6 +3,7 @@
 (define deps '("sass"
                "jsond"
                "pollen"
+               "beeswax"
                "txexpr"
                "sugar"
                "markdown"
