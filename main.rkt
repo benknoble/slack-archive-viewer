@@ -29,7 +29,7 @@
   (define generated-files (->pollen "_data"))
 
   step "Render pollen"
-  (render)
+  (render generated-files)
 
   step "Render CSS"
   (define static-files (hash-ref generated-files 'statics))

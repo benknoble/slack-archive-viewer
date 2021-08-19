@@ -176,7 +176,7 @@
   ;; see ->pollen parameters
   (->symbol (remove-one-dir (path-replace-extension n ext))))
 
-(define (render [src-dir "pollen"])
+(define (render generated-files [src-dir "pollen"])
   ;; I wanted to use
   ;; https://docs.racket-lang.org/raco/command.html#%28mod-path._raco%2Fall-tools%29
   ;; instead of using (system "raco pollen …")---I expect this to be slightly
@@ -184,10 +184,17 @@
   ;; BUT in order to use pollen in parallel mode, pollen takes heavy advantage
   ;; of places, which DO NOT inherit parameters. So we fall back to system
   ;; instead.
+  (define need-to-render
+    (append (list (hash-ref generated-files 'pagetree))
+            (hash-ref generated-files 'messages)
+            (hash-ref generated-files 'overviews)))
+  (define relative-to-src-dir
+    (map (curry find-relative-path src-dir) need-to-render))
+  (define need-to-render-args (string-join (map ->string relative-to-src-dir)))
   (define did-render
     (parameterize ([current-directory src-dir])
       (system "raco make template.html.rkt")
-      (system "raco pollen render -ps index.ptree")))
+      (system (format "raco beeswax render ~a" need-to-render-args))))
   (unless did-render
     (raise-user-error 'render "raco pollen render failed")))
 
