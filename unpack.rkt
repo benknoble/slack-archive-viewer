@@ -7,7 +7,8 @@
          (prefix-in archive: "private/archive.rkt")
          (prefix-in json: "private/json.rkt")
          "private/steps.rkt"
-         (prefix-in privacy: "private/privacy.rkt"))
+         (prefix-in privacy: "private/privacy.rkt")
+         (prefix-in unwanted: "private/unwanted.rkt"))
 
 (define (preproc-json dir)
   (async-edit json:unescape (json:find-all dir)))
@@ -30,6 +31,9 @@
 
   step "Clean up after ourselves"
   (for-each archive:delete archives)
+
+  step "Remove unwanted channels"
+  (unwanted:clean "_data")
 
   step "Remove messages from privacy list"
   (privacy:clean "_data")

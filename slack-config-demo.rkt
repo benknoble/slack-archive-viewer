@@ -5,7 +5,8 @@
          description
          email
          github-username
-         twitter-username)
+         twitter-username
+         unwanted-channels)
 
 (define base-url
   ;; subpath of your site
@@ -23,3 +24,7 @@
 (define email "example@example.com")
 (define github-username "githubhandle")
 (define twitter-username "twitterhandle")
+
+(define unwanted-channels
+  ;; list of channel names to exclude
+  '("channel1" "channel2"))
