@@ -137,9 +137,10 @@
   (define nav-content
     `("#lang racket/base"
       "(provide nav)"
-      "(define nav"
+      "(require pollen/template/html)"
+      "(define nav (->html"
       ,(format "~v" nav)
-      ")"))
+      "))"))
   (display-lines-to-file nav-content nav-file)
   ;}}}
 

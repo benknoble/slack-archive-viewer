@@ -29,7 +29,7 @@
           </a>
 
           <div class="trigger">
-            ◊(->html nav)
+            ◊|nav|
           </div>
         </nav>
 
