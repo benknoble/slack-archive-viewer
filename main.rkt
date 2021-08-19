@@ -44,9 +44,13 @@
   (publish "pollen" out-dir))
 
 (module+ main
-  (require racket/cmdline)
+  (require racket/cmdline
+           "private/config.rkt"
+           "private/files.rkt")
+  (define default-out-dir
+    (or (remove-one-dir (config 'base-url)) "_site"))
   (command-line
-    #:args (archives-dir [out-dir "_site"])
+    #:args (archives-dir [out-dir default-out-dir])
     (run-main archives-dir out-dir)))
 
 ;; vim: lw+=define-steps
