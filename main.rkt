@@ -9,16 +9,16 @@
          "private/sass.rkt"
          "private/async.rkt")
 
-(define (get-sass-and-scss-paths static-files)
-  (define sass-dirs (filter (λ (p) (regexp-match? #rx"\\.sass$" p)) static-files))
-  (define scss-files
+(define (get-sass-and-css-paths static-files)
+  (define sass-dirs (filter (λ (p) (regexp-match? #rx"sass" p)) static-files))
+  (define css-files
     (append-map (λ (p)
                   (cond
                     [(directory-exists? p) (directory-list p #:build? #t)]
                     [(file-exists? p) p]))
-                (filter (λ (p) (regexp-match? #rx"\\.scss" p))
+                (filter (λ (p) (regexp-match? #rx"css" p))
                         static-files)))
-  (values sass-dirs scss-files))
+  (values sass-dirs css-files))
 
 (define-steps (run-main archives-dir out-dir)
   step "Unpack data"
@@ -32,14 +32,14 @@
   step "Render pollen"
   (render)
 
-  step "Render SCSS"
+  step "Render CSS"
   (define static-files (hash-ref generated-files 'statics))
-  (define-values (sass-dirs scss-files) (get-sass-and-scss-paths static-files))
+  (define-values (sass-dirs css-files) (get-sass-and-css-paths static-files))
   (parameterize ([current-include-paths sass-dirs])
     (for-each/async (λ (f)
                       (displayln (format "Compiling SCSS ~v" f))
                       (compile/file/out f))
-                    scss-files))
+                    css-files))
 
   step "Publish"
   (publish "pollen" out-dir))
