@@ -12,12 +12,13 @@
 (define (get-sass-and-css-paths static-files)
   (define sass-dirs (filter (λ (p) (regexp-match? #rx"sass" p)) static-files))
   (define css-files
-    (append-map (λ (p)
-                  (cond
-                    [(directory-exists? p) (directory-list p #:build? #t)]
-                    [(file-exists? p) p]))
-                (filter (λ (p) (regexp-match? #rx"css" p))
-                        static-files)))
+    (filter (λ (p) (regexp-match? #rx"\\.s?css$" (path->string p)))
+            (append-map (λ (p)
+                          (cond
+                            [(directory-exists? p) (directory-list p #:build? #t)]
+                            [(file-exists? p) p]))
+                        (filter (λ (p) (regexp-match? #rx"css" p))
+                                static-files))))
   (values sass-dirs css-files))
 
 (define-steps (run-main archives-dir out-dir)
