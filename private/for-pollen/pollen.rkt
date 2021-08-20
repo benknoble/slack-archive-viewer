@@ -168,6 +168,7 @@
 (default-message-function channel_purpose)
 (default-message-function channel_topic)
 (default-message-function channel_unarchive)
+(default-message-function me_message)
 (default-message-function thread_broadcast)
 
 (define-tag-function (tombstone attrs elems)
@@ -214,9 +215,6 @@
   (define user-id (hash-ref (attr-ref attrs 'comment) 'user))
   ;; just a message with the correct user-id
   (apply-tag-function message (attrs-update attrs 'user user-id) elems))
-
-(define-tag-function (me_message attrs elems)
-  (apply-tag-function message attrs (txexpr 'em empty elems)))
 
 (define-tag-function (bot_message attrs elems)
   (txexpr* 'div
