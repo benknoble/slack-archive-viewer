@@ -62,7 +62,7 @@
     "  ◊messages{" ,@(map message-json->pollen-text channel) "}}"))
 
 (define (message-json->pollen-text message)
-  (format "◊~a[~a]{~a}"
+  (format "◊~a[~a]|{~a}|"
           (or (hash-ref message 'subtype #f) "message")
           (string-join (hash-map message (curry format "#:~a ~v")) " ")
           (hash-ref message 'text "")))
