@@ -8,9 +8,11 @@
          publish)
 
 (require racket/string
+         racket/sequence
          racket/future
          racket/list
          racket/file
+         file/glob
          racket/path
          racket/function
          racket/runtime-path
@@ -214,13 +216,18 @@
 ;; of places, which DO NOT inherit parameters. So we fall back to system
 ;; instead.
 (define (render [src-dir "pollen"])
+  (define files (map ->string (glob (build-path src-dir "**.html.pm"))))
+  (define batches (sequence->list (in-slice 100 files)))
   (define did-render
     (parameterize ([current-directory src-dir])
       (and (if (file-exists? "slack-config.rkt")
              (system "raco make slack-config.rkt")
              #t)
            (system "raco make template.html.rkt")
-           (system "raco pollen render -ps index.ptree"))))
+           (system "raco pollen setup -p")
+           (andmap (λ (batch)
+                     (system (format "raco beeswax render ~a" (string-join batch))))
+                   batches))))
   (unless did-render
     (raise-user-error 'render "raco pollen render failed")))
 
