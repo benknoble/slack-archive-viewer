@@ -62,9 +62,18 @@
     "  ◊messages{" ,@(map message-json->pollen-text channel) "}}"))
 
 (define (message-json->pollen-text message)
+  (define used-keys '( user
+                       ts
+                       subtype
+                       file
+                       comment
+                       ))
+  (define core-message
+    (make-hash (map (λ (k) (cons k (hash-ref message k #f)))
+                    used-keys)))
   (format "◊~a[~a]|{~a}|"
           (or (hash-ref message 'subtype #f) "message")
-          (string-join (hash-map message (curry format "#:~a ~v")) " ")
+          (string-join (hash-map core-message (curry format "#:~a ~v")) " ")
           (hash-ref message 'text "")))
 
 (define-steps (->pollen data-dir)
