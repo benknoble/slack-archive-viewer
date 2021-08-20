@@ -180,7 +180,7 @@
   `(@))
 
 (define-tag-function (reply_broadcast attrs elems)
-  (apply-tag-function message attrs '("reply_broadcast messages not yet supported")))
+  (apply-tag-function message attrs '("reply\\_broadcast messages not yet supported")))
 
 (define-tag-function (file_share attrs elems)
   (define user-id (attr-ref attrs 'user))
