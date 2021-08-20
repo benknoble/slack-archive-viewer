@@ -140,13 +140,14 @@
   (define user-name (get-user-name user-id))
   (define image-link (get-image-link user-id))
   (define time (format-time (attr-ref attrs 'ts)))
+  (define subtype (attr-ref attrs 'subtype ""))
   (txexpr* '@ ;; splice
            empty
            (txexpr* 'div
                     empty
                     (txexpr 'img `((src ,image-link)))
                     (txexpr* 'div
-                             '((class "message"))
+                             `((class ,(format "message ~a" subtype)))
                              (txexpr* 'div '((class "username")) user-name)
                              (txexpr* 'div '((class "time")) time)
                              (txexpr 'div '((class "msg")) (apply markdownify elems))))
@@ -183,10 +184,12 @@
   (apply-tag-function message attrs '("reply\\_broadcast messages not yet supported")))
 
 (define-tag-function (file_share attrs elems)
+  ;; TODO find a way to reduce this duplication
   (define user-id (attr-ref attrs 'user))
   (define user-name (get-user-name user-id))
   (define image-link (get-image-link user-id))
   (define time (format-time (attr-ref attrs 'ts)))
+  (define subtype (attr-ref attrs 'subtype ""))
   (define the-file (attr-ref attrs 'file))
   (define file-url (hash-ref the-file 'permalink_public "#"))
   (define file-title (hash-ref the-file 'title ""))
@@ -197,7 +200,7 @@
                     empty
                     (txexpr 'img `((src ,image-link)))
                     (txexpr* 'div
-                             '((class "message"))
+                             `((class ,(format "message ~a" subtype)))
                              (txexpr* 'div '((class "username")) user-name)
                              (txexpr* 'div '((class "time")) time)
                              (txexpr* 'div '((class "msg"))
@@ -217,7 +220,7 @@
 
 (define-tag-function (bot_message attrs elems)
   (txexpr* 'div
-           '((class "message"))
+           '((class "message bot_message"))
            (txexpr* 'div
                     '((class "msg"))
                     (txexpr* 'em empty "Bot messages not yet supported"))))
