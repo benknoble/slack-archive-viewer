@@ -59,7 +59,7 @@
 (define/caching (get-user-name user-id)
   (let ([user-id (->symbol user-id)])
     (case user-id
-      ['(USLACKBOT) "SlackBot"]
+      [(USLACKBOT) "SlackBot"]
       [else
         (define user (hash-ref users:meta user-id))
         (hash-ref user 'name)])))
@@ -67,7 +67,7 @@
 (define/caching (get-image-link user-id)
   (let ([user-id (->symbol user-id)])
     (case user-id
-      ['(USLACKBOT) "https://slack.global.ssl.fastly.net/66f9/img/slackbot_32.png"]
+      [(USLACKBOT) "https://slack.global.ssl.fastly.net/66f9/img/slackbot_32.png"]
       [else
         (define user (hash-ref users:meta user-id))
         (define profile (hash-ref user 'profile))
