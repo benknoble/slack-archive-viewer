@@ -3,6 +3,7 @@
 (require syntax/parse/define
          (for-syntax racket/base)
          racket/runtime-path
+         racket/list
          txexpr
          pollen/core
          pollen/tag
@@ -23,8 +24,10 @@
          (all-from-out "nav.rkt"))
 
 (define (attrs-update attrs key value)
-  ;; (list-set attrs (index-of attrs (assq key attrs)) (list key value))
-  (hash->attrs (hash-set (attrs->hash attrs) key value)))
+  (define idx (index-of attrs (assq key attrs)))
+  (if idx
+    (list-set attrs idx (list key value))
+    (cons (list key value) attrs)))
 
 (define (apply-tag-function f attrs elems)
   ;; mbutterick went to a lot of work to make sure define-tag-function and
