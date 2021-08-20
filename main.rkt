@@ -6,7 +6,8 @@
          "private/steps.rkt"
          (rename-in "unpack.rkt" [run-main unpack])
          "private/pollen.rkt"
-         "private/sass.rkt")
+         "private/sass.rkt"
+         "private/async.rkt")
 
 (define (get-sass-and-scss-paths static-files)
   (define sass-dirs (filter (λ (p) (regexp-match? #rx"\\.sass$" p)) static-files))
@@ -35,10 +36,10 @@
   (define static-files (hash-ref generated-files 'statics))
   (define-values (sass-dirs scss-files) (get-sass-and-scss-paths static-files))
   (parameterize ([current-include-paths sass-dirs])
-    (for-each (λ (f)
-                (displayln (format "Compiling SCSS ~v" f))
-                (compile/file/out f))
-              scss-files))
+    (for-each/async (λ (f)
+                      (displayln (format "Compiling SCSS ~v" f))
+                      (compile/file/out f))
+                    scss-files))
 
   step "Publish"
   (publish "pollen" out-dir))

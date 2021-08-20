@@ -3,7 +3,7 @@
 (provide (all-defined-out))
 
 (require racket/require
-         (multi-in "private" ("meta.rkt")))
+         (multi-in "private" ("meta.rkt" "async.rkt")))
 
 (define data (build-path "_data"))
 (define channels
@@ -25,8 +25,8 @@
   (update-meta (make-path) merged-metadata))
 
 (define (run-main meta-paths)
-  (for-each (λ (meta-info) (merge-meta meta-info meta-paths))
-            meta-infos))
+  (for-each/async (λ (meta-info) (merge-meta meta-info meta-paths))
+                  meta-infos))
 
 (module+ main
   (command-line

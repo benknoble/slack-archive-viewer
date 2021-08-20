@@ -8,7 +8,8 @@
          (prefix-in json: "private/json.rkt")
          "private/steps.rkt"
          (prefix-in privacy: "private/privacy.rkt")
-         (prefix-in unwanted: "private/unwanted.rkt"))
+         (prefix-in unwanted: "private/unwanted.rkt")
+         "private/async.rkt")
 
 (define (preproc-json dir)
   (async-edit json:unescape (json:find-all dir)))
@@ -21,7 +22,7 @@
   (define archives (archive:find-archives archives-dir))
 
   step "Extract each archive"
-  (for-each archive:extract archives)
+  (for-each/async archive:extract archives)
 
   step "Gather all the metadata into _data"
   (meta:run-main (map archive:archive-temp-dir archives))
@@ -30,7 +31,7 @@
   (for-each archive:copy-to-_data archives)
 
   step "Clean up after ourselves"
-  (for-each archive:delete archives)
+  (for-each/async archive:delete archives)
 
   step "Remove unwanted channels"
   (unwanted:clean "_data")

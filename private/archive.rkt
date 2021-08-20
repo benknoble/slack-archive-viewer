@@ -11,7 +11,8 @@
 (require file/unzip
          file/glob
          "files.rkt"
-         "channels.rkt")
+         "channels.rkt"
+         "async.rkt")
 
 (struct archive [zip-loc temp-dir])
 
@@ -30,11 +31,11 @@
 
 (define/match (copy-to-_data the-archive)
   [((archive _ temp-dir))
-   (for-each (λ (channel)
-               (copy-directory/files* channel
-                                      (build-path "_data" (file-name-from-path channel))
-                                      #t))
-             (channels temp-dir))])
+   (for-each/async (λ (channel)
+                     (copy-directory/files* channel
+                                            (build-path "_data" (file-name-from-path channel))
+                                            #t))
+                   (channels temp-dir))])
 
 (define/match (delete the-archive)
   [((archive _ temp-dir))

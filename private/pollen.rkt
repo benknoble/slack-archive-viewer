@@ -26,7 +26,8 @@
          "meta.rkt"
          (only-in "../merge-meta.rkt" users channels)
          "steps.rkt"
-         "config.rkt")
+         "config.rkt"
+         "async.rkt")
 
 (define-runtime-path-list static-for-pollen
                           (map (λ (p) (build-path "for-pollen" p))
@@ -70,9 +71,9 @@
   step "Make pollen directory tree" ;{{{
   (mkdir! "pollen")
   (define the-channel-paths (channel-paths data-dir))
-  (for-each mkdir!
-            (map (compose1 (curry build-path "pollen") file-name-from-path)
-                 the-channel-paths))
+  (for-each/async mkdir!
+                  (map (compose1 (curry build-path "pollen") file-name-from-path)
+                       the-channel-paths))
   ;}}}
 
   step "Convert message files to pollen" ;{{{
@@ -173,9 +174,7 @@
     (map (λ (static-file-or-dir)
            (build-path "pollen" (file-name-from-path static-file-or-dir)))
          static-for-pollen))
-  (for/async ([static-file-or-dir static-for-pollen]
-              [output-static-file output-static-files])
-    (copy-directory/files* static-file-or-dir output-static-file))
+  (for-each/async copy-directory/files* static-for-pollen output-static-files)
   ;}}}
 
   step "Copy slack-config.rkt, if present" ;{{{
