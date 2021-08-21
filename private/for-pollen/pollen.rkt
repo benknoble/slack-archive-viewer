@@ -84,6 +84,8 @@
     (define purpose (hash-ref channel 'purpose))
     (hash-ref purpose 'value)))
 
+(define slack-url-regexp
+  (regexp (format "<(~v)\\|([^[:space:]]+)>" (object-name url-regexp))))
 (define (slackify . text)
   ;; TODO the original replaces
   ;; - slack user @s
@@ -106,7 +108,7 @@
             (txexpr* 'strong null
                      (link (make-url (format "~a.html" the-name))
                            "#" the-name))))]
-      [,(regexp (format "<(~v)\\|([^[:space:]]+)>" (object-name url-regexp)))
+      [,slack-url-regexp
        ,(λ (input url link-text)
           (xexpr->html (link url link-text)))]
       ;; | -> \|
