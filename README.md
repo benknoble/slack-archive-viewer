@@ -1,40 +1,45 @@
 # Slack archive viewer
 
-Original code from
-[jekyll-slack](https://github.com/mdlincoln/jekyll-slack.git), with
-modifications by [@benknoble](https://github.com/benknoble).
+A racket program based on [jekyll-slack](https://github.com/mdlincoln/jekyll-slack.git).
 
 ## Usage
 
 ### Deploy with GitHub actions
 
-- Fork this repository
-- Add your archives in `archives/`
+- Create a (probably private) repository.
+- Add your archives in `archives/`.
   - Make sure the names sort in chronological order. A simple way to do so is to
     use `from-YYYY-MM-DD-to-YYYY-MM-DD.zip` as the name.
-- Copy `pages.yml` to `.github/workflows/pages.yml`
+- Copy `pages.yml` to `.github/workflows/pages.yml` and modify the `folder` to
+  push to `gh-pages`.
 
 The site will be built on pushes to `main`.
 
 ### Deploy manually
 
-You'll need racket 8.0+ and Ruby 3.0+ with bundler.
+You'll need racket 8.0+.
 
-- Clone this repository
-- Add your archives in a directory (e.g., `archives`)
+- `raco pkg install slack-archive-viewer`
+- Add your archives in a directory (e.g., `archives`).
   - Make sure the names sort in chronological order. A simple way to do so is to
     use `from-YYYY-MM-DD-to-YYYY-MM-DD.zip` as the name.
-- Run `racket unpack.rkt <your-archive-dir>`
-  - Installing the racket package with `raco pkg install` or `make install` will
-    cause the racket code to run faster. Then the unpack step can be run as
-    `racket -l slack-archive-viewer/unpack <your-archive-dir>`.
-- Run `bundle && bundle exec jekyll build`
+- Configure the build metadata and privacy lists (see `slack-config-demo.rkt`
+  and `privacy-list-demo.rkt`).
+- Run `racket -l slack-archive-viewer <your-archive-dir>`
 
-The site will be built into `_site`.
+The site will be built into `_site` unless you specify `base-url` in
+`slack-config.rkt`, in which case the site is built into a matching directory
+(sans leading slash).
+
+To view the generated site:
+- If your site was built into `_site` (no `base-url`), you can run a web server
+  in the `_site` directory (*e.g.*, `python3 -m http.server -d _site`) and
+  navigate to `localhost:XXXX` in a browser.
+- If your site was built into a `base-url` directory, you can run a web server
+  from the build directory (*e.g.*, `python3 -m http.server`) and navigate to
+  `localhost:XXXX/base-url` in a browser.
 
 ## Developing
-
-WIP: port to Racket
 
 Todo:
 

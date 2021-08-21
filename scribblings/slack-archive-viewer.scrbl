@@ -7,4 +7,5 @@
 
 @defmodule[slack-archive-viewer]
 
-Package Description Here
+Developer documentation coming soon. User documentation is mostly in the README,
+and will also be here soon.

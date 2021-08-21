@@ -1,8 +1,0 @@
-<div>
-  <img src='{{ message.comment.user | user_img }}' />
-  <div class='message'>
-    <div class='username'>{{ message.comment.user | user_name }}</div>
-    <div class='time'>{{ message.ts | slack_timestamp | date: "%r" }}</div>
-    <div class='msg'>{{ message.text | slack_message | markdownify }}</div>
-  </div>
-</div>
