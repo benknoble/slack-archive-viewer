@@ -85,7 +85,7 @@
     (hash-ref purpose 'value)))
 
 (define slack-url-regexp
-  (regexp (format "<(~v)\\|([^[:space:]]+)>" (object-name url-regexp))))
+  (regexp (format "<(~a)\\|([^[:space:]]+)>" (object-name url-regexp))))
 (define (slackify . text)
   ;; TODO the original replaces
   ;; - slack user @s
