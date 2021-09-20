@@ -21,7 +21,7 @@ jobs:
           version: '8.0'
 
       - name: Install viewer
-        run: raco pkg install --no-docs slack-archive-viewer
+        run: raco pkg install --deps search-auto --no-docs slack-archive-viewer
 
       - name: Build
         run: racket -l slack-archive-viewer archives

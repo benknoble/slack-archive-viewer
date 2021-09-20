@@ -19,7 +19,7 @@ The site will be built on pushes to `main`.
 
 You'll need racket 8.0+.
 
-- `raco pkg install slack-archive-viewer`
+- `raco pkg install slack-archive-viewer` (you may want `--deps search-auto`)
 - Add your archives in a directory (e.g., `archives`).
   - Make sure the names sort in chronological order. A simple way to do so is to
     use `from-YYYY-MM-DD-to-YYYY-MM-DD.zip` as the name.
