@@ -38,6 +38,10 @@
         &:not(:first-child) {
             margin-left: 20px;
         }
+
+        &::before {
+          content: '#';
+        }
     }
 
     @include media-query($on-palm) {
