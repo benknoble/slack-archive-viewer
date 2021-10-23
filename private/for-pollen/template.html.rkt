@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>◊(or (select-from-metas 'title metas) site-title)</title>
-    <meta name="description" content=◊|description|>
+    <meta name="description" content="◊|description|">
 
     <link rel="stylesheet" href='◊(make-url "css/main.css")'>
     <link rel="canonical" href='◊(make-url here)'>
