@@ -15,13 +15,13 @@
          ;; must not be relative path because this file is used in a separate
          ;; pollen program
          (only-in slack-archive-viewer/private/config define-dynamic-definer)
-         "nav.rkt"
+         "metadata.rkt"
          (prefix-in users: "users.rkt")
          (prefix-in channels: "channels.rkt"))
 
 (provide (all-defined-out)
          (all-from-out sugar)
-         (all-from-out "nav.rkt"))
+         (all-from-out "metadata.rkt"))
 
 (define (attrs-update attrs key value)
   (define idx (index-of attrs (assq key attrs)))

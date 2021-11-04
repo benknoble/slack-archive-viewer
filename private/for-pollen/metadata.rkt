@@ -5,7 +5,7 @@
 
 (require pollen/template/html)
 
-(provide nav)
+(provide (all-defined-out))
 
 (define nav (->html
               '((a ((href "/advent-of-code.html") (class "page-link")) "advent-of-code")
@@ -15,3 +15,6 @@
                 (a ((href "/random.html") (class "page-link")) "random")
                 (a ((href "/scribble-math.html") (class "page-link")) "scribble-math")
                 (a ((href "/vim.html") (class "page-link")) "vim"))))
+
+(define last-archived-date
+  "2021-06-07")

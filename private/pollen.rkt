@@ -137,8 +137,8 @@
   (display-to-file pagetree-content pagetree-file)
   ;}}}
 
-  step "Generate nav" ;{{{
-  (define nav-file (build-path "pollen" "nav.rkt"))
+  step "Generate static metadata (nav, last-update)" ;{{{
+  (define metadata-file (build-path "pollen" "metadata.rkt"))
   (define nav
     (let ([channels (children 'channels pagetree)])
       (map (λ (c)
@@ -146,14 +146,20 @@
                   (class "page-link"))
                  ,(->string (path-replace-extension (file-name-from-path (->path c)) ""))))
            channels)))
-  (define nav-content
+  (define last-archived-date
+    (let ([dates (map (compose1 path->string (curryr path-replace-extension #"") file-name-from-path) channel-files)])
+      (last (sort dates string<?))))
+  (define metadata-content
     `("#lang racket/base"
-      "(provide nav)"
+      "(provide (all-defined-out))"
       "(require pollen/template/html)"
       "(define nav (->html"
       ,(format "~v" nav)
-      "))"))
-  (display-lines-to-file nav-content nav-file)
+      "))"
+      "(define last-archived-date"
+      ,(format "~v" last-archived-date)
+      ")"))
+  (display-lines-to-file metadata-content metadata-file)
   ;}}}
 
   step "Convert metadata to jsond" ;{{{
@@ -200,7 +206,7 @@
          (pagetree . ,pagetree-file)
          (metas . ,output-meta-files)
          (statics . ,output-static-files)
-         (nav . ,nav-file)
+         (metadata . ,metadata-file)
          (config . ,config-file)))
 
 (define (path->pagetree-output n [ext ".html"])
