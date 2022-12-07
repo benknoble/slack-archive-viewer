@@ -23,3 +23,4 @@
 (define pkg-desc "Generates a website to view slack archives")
 (define version "0.0")
 (define pkg-authors '(benknoble))
+(define license 'BSD-3-Clause)
